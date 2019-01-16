@@ -1,6 +1,6 @@
 namespace Rubidium
 {
-    public class Token
+    public abstract class Token
     {
         public string StringValue { get; }
         public int Index { get; }
