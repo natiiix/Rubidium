@@ -2,11 +2,13 @@ namespace Rubidium
 {
     public class Token
     {
-        public string Value { get; }
+        public string StringValue { get; }
+        public int Index { get; }
 
-        public Token(string value)
+        public Token(string str, int index)
         {
-            Value = value;
+            StringValue = str;
+            Index = index;
         }
     }
 }
