@@ -11,21 +11,21 @@ namespace Rubidium
 
             while (index < str.Length)
             {
-                Token token = ParseToken(str, index);
+                Token token = ParseToken(str, ref index);
                 tokens.Add(token);
-                index += token.StringValue.Length;
             }
 
             return tokens;
         }
 
-        public static Token ParseToken(string str, int index)
+        public static Token ParseToken(string str, ref int index)
         {
             char first = str[index];
 
-            if (first == ' ')
+            if (char.IsWhiteSpace(' '))
             {
-                return ParseToken(str, index + 1);
+                index++;
+                return ParseToken(str, ref index);
             }
             else if (char.IsDigit(first))
             {
@@ -36,7 +36,9 @@ namespace Rubidium
                     length++;
                 }
 
-                return new IntegerToken(str.Substring(index, length), index);
+                IntegerToken token = new IntegerToken(str.Substring(index, length), index);
+                index += length;
+                return token;
             }
             else if (char.IsLetter(first))
             {
@@ -47,11 +49,13 @@ namespace Rubidium
                     length++;
                 }
 
-                return new SymbolToken(str.Substring(index, length), index);
+                SymbolToken token = new SymbolToken(str.Substring(index, length), index);
+                index += length;
+                return token;
             }
             else
             {
-                return new SpecialToken(first.ToString(), index);
+                return new SpecialToken(first.ToString(), index++);
             }
         }
     }
