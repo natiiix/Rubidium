@@ -64,13 +64,13 @@ namespace Rubidium
 
         public override string ToString() => $"({Numerator}/{Denominator})";
 
-        public static explicit operator double(Fraction f) => (double)f.Numerator / (double)f.Denominator;
+        public static implicit operator Fraction(BigInteger b) => new Fraction(b);
 
-        public static explicit operator Fraction(BigInteger b) => new Fraction(b);
-
-        public static explicit operator Fraction(int i) => new Fraction(i);
+        public static implicit operator Fraction(int i) => new Fraction(i);
 
         public static explicit operator Fraction(double d) => FromDouble(d);
+
+        public static explicit operator double(Fraction f) => (double)f.Numerator / (double)f.Denominator;
 
         private static BigInteger PowerOf10(int power) => BigInteger.Pow(10, power);
     }
