@@ -22,7 +22,7 @@ namespace Rubidium
         {
             char first = str[index];
 
-            if (char.IsWhiteSpace(' '))
+            if (char.IsWhiteSpace(first))
             {
                 index++;
                 return ParseToken(str, ref index);
