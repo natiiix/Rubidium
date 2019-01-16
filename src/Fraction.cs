@@ -22,5 +22,7 @@ namespace Rubidium
         public Fraction(int numerator, int denominator = 1) : this((BigInteger)numerator, (BigInteger)denominator) { }
 
         public override string ToString() => $"({Numerator}/{Denominator})";
+
+        public static explicit operator double(Fraction f) => (double)f.Numerator / (double)f.Denominator;
     }
 }
