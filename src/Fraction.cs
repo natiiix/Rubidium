@@ -21,6 +21,8 @@ namespace Rubidium
             Normalize();
         }
 
+        public Fraction(BigInteger numerator) : this(numerator, 1) { }
+
         private void Normalize()
         {
             if (Denominator.Sign < 0)
@@ -63,6 +65,10 @@ namespace Rubidium
         public override string ToString() => $"({Numerator}/{Denominator})";
 
         public static explicit operator double(Fraction f) => (double)f.Numerator / (double)f.Denominator;
+
+        public static explicit operator Fraction(BigInteger b) => new Fraction(b);
+
+        public static explicit operator Fraction(int i) => new Fraction(i);
 
         public static explicit operator Fraction(double d) => FromDouble(d);
 
