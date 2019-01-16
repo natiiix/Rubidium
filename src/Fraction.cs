@@ -20,5 +20,7 @@ namespace Rubidium
         }
 
         public Fraction(int numerator, int denominator = 1) : this((BigInteger)numerator, (BigInteger)denominator) { }
+
+        public override string ToString() => $"({Numerator}/{Denominator})";
     }
 }
