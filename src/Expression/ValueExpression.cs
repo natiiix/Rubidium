@@ -1,6 +1,6 @@
 namespace Rubidium
 {
-    public abstract class ValueExpression : Expression
+    public abstract class ValueExpression
     {
 
     }
