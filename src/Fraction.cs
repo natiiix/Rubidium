@@ -91,7 +91,7 @@ namespace Rubidium
         {
             if (exponent.Denominator != 1 || exponent.Numerator < 0 || exponent.Numerator > int.MaxValue)
             {
-                throw new Exception($"Exponent must be within the range 0 - {int.MaxValue}");
+                throw new NotImplementedException($"Exponent must be within the range 0 - {int.MaxValue}");
             }
 
             int exp = (int)exponent.Numerator;
