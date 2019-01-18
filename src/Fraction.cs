@@ -48,6 +48,11 @@ namespace Rubidium
             const int EXPONENT_VALUE_LENGTH = 4;
             const int FULL_EXPONENT_LENGTH = EXPONENT_VALUE_LENGTH + 1;
 
+            if (!double.IsFinite(value))
+            {
+                throw new ArgumentException("Value must be finite");
+            }
+
             string valueString = value.ToString($"e{PRECISION}");
             int decimalSeparatorIndex = valueString.Length - PRECISION - FULL_EXPONENT_LENGTH - 1;
 
