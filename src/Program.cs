@@ -7,25 +7,17 @@ namespace Rubidium
     {
         private static void Main(string[] args)
         {
-            // Console.WriteLine((0).ToString("e17"));
-            // Console.WriteLine((-1).ToString("e17"));
-            // Console.WriteLine((-1.23456).ToString("e15"));
-            // Console.WriteLine((-1.23456e30).ToString("e15"));
-            // Console.WriteLine((-1.23456e-30).ToString("e15"));
-            // Console.WriteLine(new Fraction(420, 69));
-            // Console.WriteLine(new Fraction(0, 69));
+            string[] query =
+            {
+                "a = 1",
+                "b = 3",
+                "c = -4",
+                "d = (b^2 - 4 * a * c)^(1/2)",
+                "x1 = (-b + d) / (2 * a)",
+                "x2 = (-b - d) / (2 * a)",
+            };
 
-            // foreach (double d in new double[] { -1.23456789012345678e20, 1.23456789012345678e-20 })
-            // {
-            //     Fraction f = Fraction.FromDouble(d);
-
-            //     Console.WriteLine(d.ToString("e15"));
-            //     Console.WriteLine(((double)f).ToString("e15"));
-
-            //     Console.WriteLine(f);
-            // }
-
-            List<Token> tokens = Lexer.Tokenize("x = 12 ; y = x");
+            List<Token> tokens = Lexer.Tokenize(string.Join(';', query));
             SyntaxTree tree = Parser.ParseSyntaxTree(tokens);
             Runtime.Run(tree);
         }
