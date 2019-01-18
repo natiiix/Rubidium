@@ -9,9 +9,15 @@ namespace Rubidium
         {
             SyntaxTree tree = new SyntaxTree();
 
-            for (int i = 0; i < tokens.Count && TryParseTopLevelExpression(tokens, i, out int length, out ValueExpression expr); i += length)
+            int i = 0;
+            for (; i < tokens.Count && TryParseTopLevelExpression(tokens, i, out int length, out ValueExpression expr); i += length)
             {
                 tree.TopLevelExpressions.Add(expr);
+            }
+
+            if (i < tokens.Count)
+            {
+                throw new Exception($"Unexpected token \"{tokens[i].StringValue}\" at index {tokens[i].Index}");
             }
 
             return tree;
@@ -22,11 +28,17 @@ namespace Rubidium
             length = default(int);
             expr = default(EqualityExpression);
 
-            if (tokens.Count - index >= 3 && tokens[index] is SymbolToken && tokens[index + 1] is SpecialToken special && special.Equality)
+            if (tokens[index] is SpecialToken firstSpecial && firstSpecial.Terminator)
+            {
+                bool success = TryParseTopLevelExpression(tokens, index + 1, out int subLen, out expr);
+                length = 1 + subLen;
+                return success;
+            }
+            else if (tokens.Count - index >= 3 && tokens[index] is SymbolToken && tokens[index + 1] is SpecialToken special && special.Equality)
             {
                 bool success = TryParseOperationExpression(tokens, index + 2, out int opLen, out OperationExpression opExpr);
                 length = 2 + opLen;
-                expr = opExpr;
+                expr = new EqualityExpression(new VariableExpression(tokens[index].StringValue), opExpr);
                 return success;
             }
             else

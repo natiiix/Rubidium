@@ -27,6 +27,7 @@ namespace Rubidium
 
             List<Token> tokens = Lexer.Tokenize("x = 12 ; y = x");
             SyntaxTree tree = Parser.ParseSyntaxTree(tokens);
+            Runtime.Run(tree);
         }
     }
 }

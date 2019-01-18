@@ -1,3 +1,5 @@
+using System.Collections.Generic;
+
 namespace Rubidium
 {
     public class EqualityExpression : ValueExpression
@@ -9,6 +11,12 @@ namespace Rubidium
         {
             Variable = variable;
             Value = value;
+        }
+
+        public override Fraction Evaluate(Dictionary<string, Fraction> variables)
+        {
+            variables[Variable.Name] = Value.Evaluate(variables);
+            return variables[Variable.Name];
         }
     }
 }

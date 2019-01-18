@@ -1,3 +1,5 @@
+using System.Collections.Generic;
+
 namespace Rubidium
 {
     public class NegationExpression : ValueExpression
@@ -8,5 +10,7 @@ namespace Rubidium
         {
             Expression = expr;
         }
+
+        public override Fraction Evaluate(Dictionary<string, Fraction> variables) => Expression.Evaluate(variables); // TODO
     }
 }
