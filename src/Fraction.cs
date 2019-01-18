@@ -74,6 +74,14 @@ namespace Rubidium
 
         public static Fraction operator -(Fraction f) => new Fraction(-f.Numerator, f.Denominator);
 
+        public static Fraction operator ~(Fraction f) => new Fraction(f.Denominator, f.Numerator);
+
+        public static Fraction operator *(Fraction first, Fraction second) =>
+            new Fraction(first.Numerator * second.Numerator, first.Denominator * second.Denominator);
+
+        public static Fraction operator /(Fraction first, Fraction second) =>
+            new Fraction(first.Numerator * second.Denominator, first.Denominator * second.Numerator);
+
         private static BigInteger PowerOf10(int power) => BigInteger.Pow(10, power);
     }
 }
