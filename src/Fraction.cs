@@ -76,6 +76,11 @@ namespace Rubidium
 
         public static Fraction operator ~(Fraction f) => new Fraction(f.Denominator, f.Numerator);
 
+        public static Fraction operator +(Fraction first, Fraction second) =>
+            new Fraction((first.Numerator * second.Denominator) + (second.Numerator * first.Denominator), first.Denominator * second.Denominator);
+
+        public static Fraction operator -(Fraction first, Fraction second) => first + -second;
+
         public static Fraction operator *(Fraction first, Fraction second) =>
             new Fraction(first.Numerator * second.Numerator, first.Denominator * second.Denominator);
 
