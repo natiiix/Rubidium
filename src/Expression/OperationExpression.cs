@@ -71,8 +71,17 @@ namespace Rubidium
                                 throw new Exception("Invalid operation");
                         }
 
+                        LinkedListNode<Operation> nextOpNode = opNode.Next;
+
                         values.Remove(rightNode);
                         operations.Remove(opNode);
+
+                        opNode = nextOpNode;
+                    }
+                    else
+                    {
+                        leftNode = leftNode.Next;
+                        opNode = opNode.Next;
                     }
                 }
             }
