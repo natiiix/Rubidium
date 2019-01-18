@@ -87,6 +87,17 @@ namespace Rubidium
         public static Fraction operator /(Fraction first, Fraction second) =>
             new Fraction(first.Numerator * second.Denominator, first.Denominator * second.Numerator);
 
+        public static Fraction operator ^(Fraction value, Fraction exponent)
+        {
+            if (exponent.Denominator != 1 || exponent.Numerator < 0 || exponent.Numerator > int.MaxValue)
+            {
+                throw new Exception($"Exponent must be within the range 0 - {int.MaxValue}");
+            }
+
+            int exp = (int)exponent.Numerator;
+            return new Fraction(BigInteger.Pow(value.Numerator, exp), BigInteger.Pow(value.Denominator, exp));
+        }
+
         private static BigInteger PowerOf10(int power) => BigInteger.Pow(10, power);
     }
 }
