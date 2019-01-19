@@ -105,6 +105,42 @@ namespace Rubidium
             }
             else if (first is SymbolToken)
             {
+                if (!IsEndOfTokens(tokens, index + 1) && tokens[index + 1] is SpecialToken leftSpecial && leftSpecial.LeftParenthesis)
+                {
+                    List<OperationExpression> parameters = new List<OperationExpression>();
+                    int i = index + 2;
+
+                    if (!IsEndOfTokens(tokens, i) && tokens[i] is SpecialToken rightSpecial && rightSpecial.RightParenthesis)
+                    {
+                        length = i + 1 - index;
+                        expr = new FunctionCallExpression(first.StringValue, parameters);
+                        return true;
+                    }
+
+                    while (!IsEndOfTokens(tokens, i) && TryParseOperationExpression(tokens, i, out int opLen, out OperationExpression opExpr))
+                    {
+                        parameters.Add(opExpr);
+                        i += opLen;
+
+                        if (!IsEndOfTokens(tokens, i) && tokens[i] is SpecialToken nextSpecial)
+                        {
+                            if (nextSpecial.RightParenthesis)
+                            {
+                                length = i + 1 - index;
+                                expr = new FunctionCallExpression(first.StringValue, parameters);
+                                return true;
+                            }
+                            else if (nextSpecial.ParameterSeparator)
+                            {
+                                i++;
+                                continue;
+                            }
+                        }
+
+                        break;
+                    }
+                }
+
                 length = 1;
                 expr = new VariableExpression(first.StringValue);
                 return true;
