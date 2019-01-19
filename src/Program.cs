@@ -15,6 +15,7 @@ namespace Rubidium
                 "d = (b^2 - 4 * a * c)^(1/2)",
                 "x1 = (-b + d) / (2 * a)",
                 "x2 = (-b - d) / (2 * a)",
+                "abs = 5 + ----abs(-12 + 5)"
             };
 
             List<Token> tokens = Lexer.Tokenize(string.Join(';', query));

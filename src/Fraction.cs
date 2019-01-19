@@ -1,9 +1,11 @@
 using System;
+using System.Linq;
+using System.Collections.Generic;
 using System.Numerics;
 
 namespace Rubidium
 {
-    public class Fraction
+    public class Fraction : IComparable<Fraction>
     {
         public BigInteger Numerator { get; private set; }
         public BigInteger Denominator { get; private set; }
@@ -68,6 +70,26 @@ namespace Rubidium
 
             return new Fraction(numerator, denominator);
         }
+
+        public static Fraction Sum(IEnumerable<Fraction> values)
+        {
+            Fraction sum = 0;
+
+            foreach (Fraction f in values)
+            {
+                sum += f;
+            }
+
+            return sum;
+        }
+
+        public static Fraction Average(IEnumerable<Fraction> values) => Sum(values) / values.Count();
+
+        public int CompareTo(Fraction other) => (this - other).Numerator.Sign;
+
+        public override bool Equals(object obj) => obj is Fraction f && f.Numerator == Numerator && f.Denominator == Denominator;
+
+        public override int GetHashCode() => Numerator.GetHashCode() ^ Denominator.GetHashCode();
 
         public override string ToString() => $"({Numerator}/{Denominator})";
 
