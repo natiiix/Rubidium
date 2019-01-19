@@ -13,10 +13,6 @@ namespace Rubidium
             Value = value;
         }
 
-        public override Fraction Evaluate(Dictionary<string, Fraction> variables)
-        {
-            variables[Variable.Name] = Value.Evaluate(variables);
-            return variables[Variable.Name];
-        }
+        public override Fraction Evaluate(Dictionary<string, Fraction> variables) => variables[Variable.Name] = Value.Evaluate(variables);
     }
 }
