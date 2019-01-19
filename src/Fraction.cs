@@ -8,6 +8,8 @@ namespace Rubidium
         public BigInteger Numerator { get; private set; }
         public BigInteger Denominator { get; private set; }
 
+        public Fraction AbsoluteValue => Numerator.Sign < 0 ? -this : this;
+
         public Fraction(BigInteger numerator, BigInteger denominator)
         {
             if (denominator.IsZero)
