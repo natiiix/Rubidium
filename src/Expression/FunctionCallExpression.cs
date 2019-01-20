@@ -21,9 +21,13 @@ namespace Rubidium
             {
                 return Parameters.Count;
             }
-            if (FunctionName == "abs" && Parameters.Count == 1)
+            else if (FunctionName == "abs" && Parameters.Count == 1)
             {
                 return Parameters[0].Evaluate(variables).AbsoluteValue;
+            }
+            else if (FunctionName == "sqrt" && Parameters.Count == 1)
+            {
+                return Parameters[0].Evaluate(variables).SquareRoot;
             }
             else if (FunctionName == "max" && Parameters.Count > 0)
             {

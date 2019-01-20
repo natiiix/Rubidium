@@ -12,6 +12,7 @@ namespace Rubidium
 
         public bool IsZero => Numerator.IsZero;
         public Fraction AbsoluteValue => Numerator.Sign < 0 ? -this : this;
+        public Fraction SquareRoot => (Fraction)Math.Sqrt((double)this);
 
         public Fraction(BigInteger numerator, BigInteger denominator)
         {
