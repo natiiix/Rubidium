@@ -64,6 +64,10 @@ namespace Rubidium
             return new Vector(values);
         }
 
+        public static Vector operator *(Fraction f, Vector v) => v * f;
+
         public static Vector operator /(Vector v, Fraction f) => v * ~f;
+
+        public static Vector operator /(Fraction f, Vector v) => v / f;
     }
 }
