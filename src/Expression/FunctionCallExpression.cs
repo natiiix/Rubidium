@@ -41,6 +41,24 @@ namespace Rubidium
             {
                 return Fraction.Average(Parameters.Select(x => x.Evaluate(variables)));
             }
+            else if (FunctionName == "if" && Parameters.Count >= 2)
+            {
+                for (int i = 0; i < Parameters.Count - 1; i += 2)
+                {
+                    Fraction condition = Parameters[i].Evaluate(variables);
+
+                    if (!condition.IsZero)
+                    {
+                        return Parameters[i + 1].Evaluate(variables);
+                    }
+                    else if (i + 2 >= Parameters.Count)
+                    {
+                        return condition;
+                    }
+                }
+
+                return Parameters.Last().Evaluate(variables);
+            }
 
             throw new NotImplementedException($"Function \"{FunctionName}\" with {Parameters.Count} parameters is not implemented");
         }
