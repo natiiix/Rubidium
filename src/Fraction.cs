@@ -132,6 +132,18 @@ namespace Rubidium
             }
         }
 
+        public static bool operator ==(Fraction first, Fraction second) => first.Equals(second);
+
+        public static bool operator !=(Fraction first, Fraction second) => !first.Equals(second);
+
+        public static bool operator <(Fraction first, Fraction second) => first.CompareTo(second) < 0;
+
+        public static bool operator <=(Fraction first, Fraction second) => first.CompareTo(second) <= 0;
+
+        public static bool operator >(Fraction first, Fraction second) => first.CompareTo(second) > 0;
+
+        public static bool operator >=(Fraction first, Fraction second) => first.CompareTo(second) >= 0;
+
         private static BigInteger PowerOf10(int power) => BigInteger.Pow(10, power);
     }
 }
