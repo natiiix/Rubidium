@@ -11,18 +11,22 @@ namespace Rubidium
 
             foreach (ValueExpression expr in tree.TopLevelExpressions)
             {
+                Fraction value;
+
                 if (expr is EqualityExpression equality)
                 {
                     string varName = equality.Variable.Name;
-                    Fraction value = equality.Value.Evaluate(variables);
+                    value = equality.Value.Evaluate(variables);
 
                     variables[varName] = value;
-                    Console.WriteLine($"{varName} = {value}");
+                    Console.Write($"{varName} = ");
                 }
                 else
                 {
-                    Console.WriteLine(expr.Evaluate(variables));
+                    value = expr.Evaluate(variables);
                 }
+
+                Console.WriteLine($"{value} = {(double)value:g}");
             }
         }
     }
