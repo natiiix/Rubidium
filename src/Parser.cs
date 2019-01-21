@@ -75,7 +75,7 @@ namespace Rubidium
                 i += 1 + valueLen;
             }
 
-            if (IsEndOfTokens(tokens, i) || (tokens[i] is SpecialToken special && special.RightParenthesis))
+            if (IsEndOfTokens(tokens, i) || (tokens[i] is SpecialToken special && (special.RightParenthesis || special.ParameterSeparator)))
             {
                 length = i - index;
                 expr = new OperationExpression(values, operations);
