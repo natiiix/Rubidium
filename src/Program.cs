@@ -7,6 +7,7 @@ namespace Rubidium
     {
         private static void Main(string[] args)
         {
+
             string[] query =
             {
                 "a = 1",
@@ -15,7 +16,14 @@ namespace Rubidium
                 "d = (b^2 - 4 * a * c)^(1/2)",
                 "x1 = (-b + d) / (2 * a)",
                 "x2 = (-b - d) / (2 * a)",
-                "abs = 5 + ----abs(-12 + 5)"
+                "abs = 5 + ----abs(-12 + 5)",
+                "min = min(15, 40/2, 10/-50)",
+                "vars = linear(a,b,c," +
+                "1,3,-2,5," +
+                "3,5,6,7," +
+                "2,4,3,8" +
+                ")",
+                "a;b;c"
             };
 
             List<Token> tokens = Lexer.Tokenize(string.Join(';', query));
