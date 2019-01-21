@@ -4,6 +4,6 @@ namespace Rubidium
 {
     public class SyntaxTree
     {
-        public List<ValueExpression> TopLevelExpressions = new List<ValueExpression>();
+        public readonly List<OperationExpression> TopLevelExpressions = new List<OperationExpression>();
     }
 }

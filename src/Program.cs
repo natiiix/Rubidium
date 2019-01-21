@@ -23,7 +23,9 @@ namespace Rubidium
                 "3,5,6,7," +
                 "2,4,3,8" +
                 ")",
-                "a;b;c"
+                "a;b;c",
+                "5 + x = 12 + (y = -4)",
+                "x;y"
             };
 
             List<Token> tokens = Lexer.Tokenize(string.Join(';', query));

@@ -9,21 +9,13 @@ namespace Rubidium
         {
             Dictionary<string, Fraction> variables = new Dictionary<string, Fraction>();
 
-            foreach (ValueExpression expr in tree.TopLevelExpressions)
+            foreach (OperationExpression expr in tree.TopLevelExpressions)
             {
-                Fraction value;
+                Fraction value = expr.Evaluate(variables);
 
-                if (expr is EqualityExpression equality)
+                if (expr.Values.Count == 1 && expr.Values[0] is EqualityExpression equality)
                 {
-                    string varName = equality.Variable.Name;
-                    value = equality.Value.Evaluate(variables);
-
-                    variables[varName] = value;
-                    Console.Write($"{varName} = ");
-                }
-                else
-                {
-                    value = expr.Evaluate(variables);
+                    Console.Write($"{equality.Variable.Name} = ");
                 }
 
                 Console.WriteLine($"{value} = {(double)value:g}");
