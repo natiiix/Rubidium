@@ -25,7 +25,11 @@ namespace Rubidium
             {
                 Console.WriteLine(s);
 
-                if (s.Left is VariableExpression leftVariable)
+                if (s.Variables.Any(x => VariableValues.ContainsKey(x)))
+                {
+                    newStatements.Add(s.SubstituteVariables(VariableValues));
+                }
+                else if (s.Left is VariableExpression leftVariable)
                 {
                     if (s.Right is LiteralExpression rightLiteral)
                     {
