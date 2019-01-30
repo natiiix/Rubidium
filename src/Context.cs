@@ -34,29 +34,39 @@ namespace Rubidium
 
         public bool FindNewStatements()
         {
-            for (int i = 0; i < Statements.Count; i++)
+            List<Statement> keepStatements = new List<Statement>();
+            List<Statement> newStatements = new List<Statement>();
+
+            foreach (Statement s in Statements)
             {
-                Statement s = Statements[i];
                 Console.WriteLine(s);
 
                 if (s.Right.ContainsVariables)
                 {
                     if (!s.Left.ContainsVariables)
                     {
-                        Statements.Add(new Statement(s.Right, s.Left));
+                        newStatements.Add(new Statement(s.Right, s.Left));
                     }
                     else
                     {
-                        Statements.Add(new Statement(OperationExpression.Subtract(s.Left, s.Right), LiteralExpression.Zero));
+                        newStatements.Add(new Statement(OperationExpression.Subtract(s.Left, s.Right), LiteralExpression.Zero));
                     }
                 }
                 else if (!s.Left.ContainsVariables)
                 {
-                    Console.WriteLine($"{s}: {OperationExpression.Subtract(s.Left, s.Right) is LiteralExpression literal && literal.Value == 0}");
+                    Console.WriteLine($"{s} : {OperationExpression.Subtract(s.Left, s.Right) is LiteralExpression literal && literal.Value == 0}");
+                }
+                else
+                {
+                    keepStatements.Add(s);
                 }
             }
 
-            return false;
+            Statements.Clear();
+            Statements.AddRange(keepStatements);
+            Statements.AddRange(newStatements);
+
+            return newStatements.Count > 0;
         }
     }
 }
