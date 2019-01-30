@@ -75,5 +75,29 @@ namespace Rubidium
 
             return (newStatements.Count > 0 || (newVariablesBound > 0 && keepStatements.Count > 0));
         }
+
+        public override string ToString()
+        {
+            string str = string.Empty;
+
+            if (Statements.Count > 0)
+            {
+                str += "Statements:" + Environment.NewLine +
+                    string.Join(Environment.NewLine, Statements);
+            }
+
+            if (VariableValues.Count > 0)
+            {
+                if (!string.IsNullOrEmpty(str))
+                {
+                    str += Environment.NewLine;
+                }
+
+                str += "Variables:" + Environment.NewLine +
+                    string.Join(Environment.NewLine, VariableValues.Select(x => $"{x.Key} = {x.Value}"));
+            }
+
+            return str;
+        }
     }
 }

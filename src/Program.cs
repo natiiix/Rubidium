@@ -9,11 +9,10 @@ namespace Rubidium
         {
             string[] query =
             {
-                "c = (((3a))) + b",
-                "b = a",
-                "2 = a",
-                "7 = 12",
-                "4 = 4"
+                "x1 = (-b + d) / (2a)",
+                "x2 = (-b - d) / (2a)",
+                "d = (b^2 - 4 a c)^(1/2)",
+                "a = 2; b = -8; c = -24"
             };
 
             List<Token> tokens = Lexer.Tokenize(string.Join(';', query));
@@ -21,6 +20,8 @@ namespace Rubidium
             Context context = new Context(statements);
 
             while (context.FindNewStatements()) ;
+
+            Console.WriteLine(context);
         }
     }
 }
