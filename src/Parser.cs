@@ -1,171 +1,113 @@
 using System;
 using System.Collections.Generic;
+using System.Linq;
 
 namespace Rubidium
 {
     public static class Parser
     {
-        public static SyntaxTree ParseSyntaxTree(List<Token> tokens)
+        public static List<Statement> ParseStatements(List<Token> tokens)
         {
-            SyntaxTree tree = new SyntaxTree();
+            List<Statement> statements = new List<Statement>();
 
-            int i = 0;
-            for (; i < tokens.Count && TryParseTopLevelExpression(tokens, i, out int length, out OperationExpression expr); i += length)
+            int index = 0;
+
+            while (index < tokens.Count)
             {
-                tree.TopLevelExpressions.Add(expr);
+                List<Token> statementTokens = new List<Token>();
+
+                while (index < tokens.Count)
+                {
+                    if (tokens[index] is SpecialToken special && special.Terminator)
+                    {
+                        index++;
+                        break;
+                    }
+
+                    statementTokens.Add(tokens[index++]);
+                }
+
+                if (statementTokens.Count > 0)
+                {
+                    statements.Add(ParseStatement(statementTokens));
+                }
             }
 
-            if (i < tokens.Count)
-            {
-                throw new Exception($"Unexpected token \"{tokens[i].StringValue}\" at index {tokens[i].Index}");
-            }
-
-            return tree;
+            return statements;
         }
 
-        private static bool TryParseTopLevelExpression(List<Token> tokens, int index, out int length, out OperationExpression expr)
+        private static Statement ParseStatement(List<Token> tokens)
         {
-            length = default(int);
-            expr = default(OperationExpression);
+            int equalityIndex = -1;
 
-            if (tokens[index] is SpecialToken firstSpecial && firstSpecial.Terminator)
+            for (int i = 0; i < tokens.Count; i++)
             {
-                bool success = TryParseTopLevelExpression(tokens, index + 1, out int subLen, out expr);
-                length = 1 + subLen;
-                return success;
+                if (tokens[i] is SpecialToken special && special.Equality)
+                {
+                    if (equalityIndex < 0)
+                    {
+                        equalityIndex = i;
+                    }
+                    else
+                    {
+                        throw new Exception("Unexpected second equality token");
+                    }
+                }
             }
-            else
+
+            if (equalityIndex < 0)
             {
-                bool success = TryParseOperationExpression(tokens, index, out length, out OperationExpression opExpr);
-                expr = opExpr;
-                return success;
+                throw new Exception("Invalid statement - no equality token");
             }
+
+            Expression left = ParseExpression(tokens.GetRange(0, equalityIndex));
+            Expression right = ParseExpression(tokens.GetRange(equalityIndex + 1, tokens.Count - equalityIndex - 1));
+
+            return new Statement(left, right);
         }
 
-        private static bool TryParseOperationExpression(List<Token> tokens, int index, out int length, out OperationExpression expr)
+        private static Expression ParseExpression(List<Token> tokens)
         {
-            length = default(int);
-            expr = default(OperationExpression);
+            if (tokens.Count == 0)
+            {
+                throw new Exception("Unable to parse expression from zero tokens");
+            }
 
-            List<ValueExpression> values = new List<ValueExpression>();
+            if (tokens.Count == 1)
+            {
+                if (tokens[0] is IntegerToken integer)
+                {
+                    return new LiteralExpression(integer.IntegerValue);
+                }
+                else if (tokens[0] is SymbolToken symbol)
+                {
+                    return new VariableExpression(symbol.StringValue);
+                }
+
+                throw new Exception("Invalid single-token expression");
+            }
+
+            List<Expression> expressions = new List<Expression>();
             List<Operation> operations = new List<Operation>();
 
-            if (!TryParseValueExpression(tokens, index, out int firstLen, out ValueExpression firstExpr))
+            List<Expression> parts = new List<Expression>();
+
+            for (int i = 0; i < tokens.Count; i++)
             {
-                return false;
-            }
-
-            values.Add(firstExpr);
-
-            int i = index + firstLen;
-
-            while (!IsEndOfTokens(tokens, i) && IsOperationToken(tokens[i], out Operation op) &&
-                TryParseValueExpression(tokens, i + 1, out int valueLen, out ValueExpression valueExpr))
-            {
-                operations.Add(op);
-                values.Add(valueExpr);
-
-                i += 1 + valueLen;
-            }
-
-            if (IsEndOfTokens(tokens, i) || (tokens[i] is SpecialToken special && (special.RightParenthesis || special.ParameterSeparator)))
-            {
-                length = i - index;
-                expr = new OperationExpression(values, operations);
-                return true;
-            }
-
-            return false;
-        }
-
-        private static bool TryParseValueExpression(List<Token> tokens, int index, out int length, out ValueExpression expr)
-        {
-            length = default(int);
-            expr = default(ValueExpression);
-
-            if (IsEndOfTokens(tokens, index))
-            {
-                return false;
-            }
-
-            Token first = tokens[index];
-
-            if (first is IntegerToken integer)
-            {
-                length = 1;
-                expr = new LiteralExpression(integer.IntegerValue);
-                return true;
-            }
-            else if (first is SymbolToken)
-            {
-                if (!IsEndOfTokens(tokens, index + 1) && tokens[index + 1] is SpecialToken nextSpecial)
+                if (IsOperationToken(tokens[i], out Operation op))
                 {
-                    if (nextSpecial.Equality)
-                    {
-                        bool success = TryParseOperationExpression(tokens, index + 2, out int opLen, out OperationExpression opExpr);
-                        length = 2 + opLen;
-                        expr = new EqualityExpression(new VariableExpression(tokens[index].StringValue), opExpr);
-                        return success;
-                    }
-                    else if (nextSpecial.LeftParenthesis)
-                    {
-                        List<OperationExpression> parameters = new List<OperationExpression>();
-                        int i = index + 2;
-
-                        if (!IsEndOfTokens(tokens, i) && tokens[i] is SpecialToken rightSpecial && rightSpecial.RightParenthesis)
-                        {
-                            length = i + 1 - index;
-                            expr = new FunctionCallExpression(first.StringValue, parameters);
-                            return true;
-                        }
-
-                        while (!IsEndOfTokens(tokens, i) && TryParseOperationExpression(tokens, i, out int opLen, out OperationExpression opExpr))
-                        {
-                            parameters.Add(opExpr);
-                            i += opLen;
-
-                            if (!IsEndOfTokens(tokens, i) && tokens[i] is SpecialToken postParamSpecial)
-                            {
-                                if (postParamSpecial.RightParenthesis)
-                                {
-                                    length = i + 1 - index;
-                                    expr = new FunctionCallExpression(first.StringValue, parameters);
-                                    return true;
-                                }
-                                else if (postParamSpecial.ParameterSeparator)
-                                {
-                                    i++;
-                                    continue;
-                                }
-                            }
-
-                            break;
-                        }
-                    }
+                    expressions.Add(OperationExpression.CreateMultiplication(parts));
+                    parts.Clear();
+                    operations.Add(op);
                 }
-
-                length = 1;
-                expr = new VariableExpression(first.StringValue);
-                return true;
-            }
-            else if (first is SpecialToken special)
-            {
-                if (special.Subtraction && TryParseValueExpression(tokens, index + 1, out int valueLen, out ValueExpression valueExpr))
+                else
                 {
-                    length = 1 + valueLen;
-                    expr = new NegationExpression(valueExpr);
-                    return true;
-                }
-                else if (special.LeftParenthesis && TryParseOperationExpression(tokens, index + 1, out int opLen, out OperationExpression opExpr) &&
-                    tokens[index + 1 + opLen] is SpecialToken opEnd && opEnd.RightParenthesis)
-                {
-                    length = 2 + opLen;
-                    expr = opExpr;
-                    return true;
+                    parts.Add(ParseExpression(tokens.GetRange(i, 1)));
                 }
             }
 
-            return false;
+            expressions.Add(OperationExpression.CreateMultiplication(parts));
+            return new OperationExpression(expressions, operations);
         }
 
         private static bool IsOperationToken(Token token, out Operation op)
@@ -204,8 +146,5 @@ namespace Rubidium
 
             return false;
         }
-
-        private static bool IsEndOfTokens(List<Token> tokens, int index) =>
-            index >= tokens.Count || (tokens[index] is SpecialToken && tokens[index].StringValue == ";");
     }
 }

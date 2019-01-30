@@ -2,8 +2,10 @@ using System.Collections.Generic;
 
 namespace Rubidium
 {
-    public class LiteralExpression : ValueExpression
+    public class LiteralExpression : Expression
     {
+        public override bool IsBound => true;
+
         public Fraction Value { get; }
 
         public LiteralExpression(Fraction value)
@@ -11,6 +13,6 @@ namespace Rubidium
             Value = value;
         }
 
-        public override Fraction Evaluate(Dictionary<string, Fraction> variables) => Value;
+        public override string ToString() => Value.ToString();
     }
 }

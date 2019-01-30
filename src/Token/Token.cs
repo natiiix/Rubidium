@@ -10,5 +10,7 @@ namespace Rubidium
             StringValue = str;
             Index = index;
         }
+
+        public override string ToString() => StringValue;
     }
 }
