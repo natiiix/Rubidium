@@ -37,6 +37,7 @@ namespace Rubidium
             for (int i = 0; i < Statements.Count; i++)
             {
                 Statement s = Statements[i];
+                Console.WriteLine(s);
 
                 if (s.Right.ContainsVariables)
                 {

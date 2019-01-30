@@ -41,20 +41,45 @@ namespace Rubidium
             {
                 throw new Exception("Unable to make multiplication expression from zero expressions");
             }
-
-            if (expressions.Count == 1)
+            else if (expressions.Count == 1)
             {
                 return expressions[0];
             }
 
+            Fraction coefficient = Fraction.One;
+            List<Expression> newExpressions = new List<Expression>();
+
+            for (int i = 0; i < expressions.Count; i++)
+            {
+                Expression expr = expressions[i];
+
+                if (expr is LiteralExpression literal)
+                {
+                    coefficient *= literal.Value;
+                }
+                else
+                {
+                    newExpressions.Add(expr);
+                }
+            }
+
+            if (coefficient == Fraction.Zero)
+            {
+                return LiteralExpression.Zero;
+            }
+            else if (coefficient != Fraction.One || newExpressions.Count == 0)
+            {
+                newExpressions.Add(new LiteralExpression(coefficient));
+            }
+
             List<Operation> operations = new List<Operation>();
 
-            for (int i = 0; i < expressions.Count - 1; i++)
+            for (int i = 0; i < newExpressions.Count - 1; i++)
             {
                 operations.Add(Operation.Multiplication);
             }
 
-            return new OperationExpression(new List<Expression>(expressions), operations);
+            return new OperationExpression(newExpressions, operations);
         }
 
         public static Expression Subtract(Expression first, Expression second)

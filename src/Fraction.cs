@@ -8,6 +8,7 @@ namespace Rubidium
     public class Fraction : IComparable<Fraction>
     {
         public static Fraction Zero => new Fraction(0);
+        public static Fraction One => new Fraction(1);
 
         public BigInteger Numerator { get; private set; }
         public BigInteger Denominator { get; private set; }
