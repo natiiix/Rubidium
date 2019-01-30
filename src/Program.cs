@@ -7,7 +7,6 @@ namespace Rubidium
     {
         private static void Main(string[] args)
         {
-
             string[] query =
             {
                 "c = (((3a))) + b",
@@ -17,7 +16,9 @@ namespace Rubidium
 
             List<Token> tokens = Lexer.Tokenize(string.Join(';', query));
             List<Statement> statements = Parser.ParseStatements(tokens);
-            // Runtime.Run(tree);
+            Context context = new Context(statements);
+
+            while (context.FindNewStatements()) ;
         }
     }
 }
