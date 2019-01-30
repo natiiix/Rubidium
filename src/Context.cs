@@ -73,7 +73,7 @@ namespace Rubidium
             Statements.AddRange(keepStatements);
             Statements.AddRange(newStatements);
 
-            return newStatements.Count > 0 || newVariablesBound > 0;
+            return (newStatements.Count > 0 || (newVariablesBound > 0 && keepStatements.Count > 0));
         }
     }
 }
