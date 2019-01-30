@@ -34,6 +34,7 @@ namespace Rubidium
 
         public bool FindNewStatements()
         {
+            int newVariablesBound = 0;
             List<Statement> keepStatements = new List<Statement>();
             List<Statement> newStatements = new List<Statement>();
 
@@ -41,7 +42,24 @@ namespace Rubidium
             {
                 Console.WriteLine(s);
 
-                if (s.Right.ContainsVariables)
+                if (s.Left is VariableExpression leftVariable)
+                {
+                    if (s.Right is LiteralExpression rightLiteral)
+                    {
+                        if (VariableValues.ContainsKey(leftVariable.Name))
+                        {
+                            throw new Exception("Variable is already bound to a value");
+                        }
+
+                        VariableValues[leftVariable.Name] = rightLiteral.Value;
+                        newVariablesBound++;
+                    }
+                    else
+                    {
+                        keepStatements.Add(s);
+                    }
+                }
+                else if (s.Right.ContainsVariables)
                 {
                     if (!s.Left.ContainsVariables)
                     {
@@ -56,15 +74,6 @@ namespace Rubidium
                 {
                     Console.WriteLine($"{s} : {OperationExpression.Subtract(s.Left, s.Right) is LiteralExpression literal && literal.Value == 0}");
                 }
-                else if (s.Left is VariableExpression leftVariable && s.Right is LiteralExpression rightLiteral)
-                {
-                    if (VariableValues.ContainsKey(leftVariable.Name))
-                    {
-                        throw new Exception("Variable is already bound to a value");
-                    }
-
-                    VariableValues[leftVariable.Name] = rightLiteral.Value;
-                }
                 else
                 {
                     keepStatements.Add(s);
@@ -75,7 +84,7 @@ namespace Rubidium
             Statements.AddRange(keepStatements);
             Statements.AddRange(newStatements);
 
-            return newStatements.Count > 0;
+            return newStatements.Count > 0 || newVariablesBound > 0;
         }
     }
 }
