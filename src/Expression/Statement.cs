@@ -3,14 +3,14 @@ using System.Linq;
 
 namespace Rubidium
 {
-    public class Statement : Expression
+    public class Statement : ICanContainVariables
     {
         public Expression Left { get; }
         public Expression Right { get; }
 
-        public override IEnumerable<string> Variables { get; }
+        public IEnumerable<string> Variables { get; }
 
-        public override bool ContainsVariables { get; }
+        public bool ContainsVariables { get; }
 
         public Statement(Expression left, Expression right)
         {
@@ -23,7 +23,7 @@ namespace Rubidium
 
         public override string ToString() => $"{Left} = {Right}";
 
-        public override Expression SubstituteVariables(Dictionary<string, Fraction> variableValues)
+        public Statement SubstituteVariables(Dictionary<string, Fraction> variableValues)
             => new Statement(Left.SubstituteVariables(variableValues), Right.SubstituteVariables(variableValues));
     }
 }
