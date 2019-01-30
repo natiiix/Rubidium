@@ -10,7 +10,7 @@ namespace Rubidium
 
             string[] query =
             {
-                "c = 3a + b",
+                "c = (((3a))) + b",
                 "b = a",
                 "a = 2"
             };

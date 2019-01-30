@@ -96,9 +96,42 @@ namespace Rubidium
             {
                 if (IsOperationToken(tokens[i], out Operation op))
                 {
-                    expressions.Add(OperationExpression.CreateMultiplication(parts));
-                    parts.Clear();
-                    operations.Add(op);
+                    if (parts.Count == 0 && op == Operation.Subtraction)
+                    {
+                        parts.Add(new LiteralExpression(-1));
+                    }
+                    else
+                    {
+                        expressions.Add(OperationExpression.Multiply(parts));
+                        parts.Clear();
+                        operations.Add(op);
+                    }
+                }
+                else if (tokens[i] is SpecialToken iSpecial && iSpecial.LeftParenthesis)
+                {
+                    int depth = 1;
+
+                    for (int j = i + 1; j < tokens.Count; j++)
+                    {
+                        if (tokens[j] is SpecialToken jSpecial)
+                        {
+                            if (jSpecial.LeftParenthesis)
+                            {
+                                depth++;
+                            }
+                            else if (jSpecial.RightParenthesis && --depth == 0)
+                            {
+                                parts.Add(ParseExpression(tokens.GetRange(i + 1, j - i - 1)));
+                                i += j - i;
+                                break;
+                            }
+                        }
+                    }
+
+                    if (depth != 0)
+                    {
+                        throw new Exception("Unexpected end of parenthesis expression");
+                    }
                 }
                 else
                 {
@@ -106,8 +139,8 @@ namespace Rubidium
                 }
             }
 
-            expressions.Add(OperationExpression.CreateMultiplication(parts));
-            return new OperationExpression(expressions, operations);
+            expressions.Add(OperationExpression.Multiply(parts));
+            return expressions.Count == 1 && operations.Count == 0 ? expressions[0] : new OperationExpression(expressions, operations);
         }
 
         private static bool IsOperationToken(Token token, out Operation op)

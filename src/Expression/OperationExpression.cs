@@ -31,11 +31,16 @@ namespace Rubidium
             }
         }
 
-        public static OperationExpression CreateMultiplication(List<Expression> expressions)
+        public static Expression Multiply(List<Expression> expressions)
         {
             if (expressions.Count == 0)
             {
                 throw new Exception("Unable to make multiplication expression from zero expressions");
+            }
+
+            if (expressions.Count == 1)
+            {
+                return expressions[0];
             }
 
             List<Operation> operations = new List<Operation>();
@@ -153,7 +158,7 @@ namespace Rubidium
                 }
             }
 
-            return str;
+            return $"( {str} )";
         }
     }
 }
