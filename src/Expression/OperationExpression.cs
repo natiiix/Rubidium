@@ -137,11 +137,11 @@ namespace Rubidium
                 }
             }
 
-            if (coefficient == Fraction.Zero)
+            if (coefficient == Fraction.Zero || newExpressions.Count == 0)
             {
-                return LiteralExpression.Zero;
+                return new LiteralExpression(coefficient);
             }
-            else if (coefficient != Fraction.One || newExpressions.Count == 0)
+            else if (coefficient != Fraction.One)
             {
                 newExpressions.Add(new LiteralExpression(coefficient));
             }
