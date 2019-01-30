@@ -35,6 +35,12 @@ namespace Rubidium
             ContainsVariables = Variables.Count() > 0;
         }
 
+        public override Expression SubstituteVariables(Dictionary<string, Fraction> variableValues)
+        {
+            IEnumerable<Expression> expressions = Expressions.Select(x => x.SubstituteVariables(variableValues));
+            return new OperationExpression(expressions.ToList(), new List<Operation>(Operations));
+        }
+
         public static Expression Multiply(List<Expression> expressions)
         {
             if (expressions.Count == 0)

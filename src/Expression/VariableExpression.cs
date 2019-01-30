@@ -16,6 +16,18 @@ namespace Rubidium
             Variables = new string[] { Name };
         }
 
+        public override Expression SubstituteVariables(Dictionary<string, Fraction> variableValues)
+        {
+            if (variableValues.ContainsKey(Name))
+            {
+                return new LiteralExpression(variableValues[Name]);
+            }
+            else
+            {
+                return this;
+            }
+        }
+
         public override string ToString() => Name;
     }
 }

@@ -16,6 +16,8 @@ namespace Rubidium
             Value = value;
         }
 
+        public override Expression SubstituteVariables(Dictionary<string, Fraction> variableValues) => this;
+
         public override string ToString() => Value.ToString();
     }
 }
