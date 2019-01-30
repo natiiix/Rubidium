@@ -4,9 +4,9 @@ namespace Rubidium
 {
     public class VariableExpression : Expression
     {
-        public override bool IsBound => false;
-
         public string Name { get; }
+
+        public override IEnumerable<string> Variables => new string[] { Name };
 
         public VariableExpression(string name)
         {

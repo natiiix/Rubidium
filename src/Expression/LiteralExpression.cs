@@ -4,9 +4,9 @@ namespace Rubidium
 {
     public class LiteralExpression : Expression
     {
-        public override bool IsBound => true;
-
         public Fraction Value { get; }
+
+        public override IEnumerable<string> Variables => new string[0];
 
         public LiteralExpression(Fraction value)
         {
