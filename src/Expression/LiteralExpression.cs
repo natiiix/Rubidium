@@ -6,7 +6,8 @@ namespace Rubidium
     {
         public Fraction Value { get; }
 
-        public override IEnumerable<string> Variables => new string[0];
+        public override IEnumerable<string> Variables { get; } = new string[0];
+        public override bool ContainsVariables { get; } = false;
 
         public LiteralExpression(Fraction value)
         {

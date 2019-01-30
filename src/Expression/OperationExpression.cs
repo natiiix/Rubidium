@@ -18,7 +18,8 @@ namespace Rubidium
         public List<Expression> Expressions { get; }
         public List<Operation> Operations { get; }
 
-        public override IEnumerable<string> Variables => Expressions.SelectMany(x => x.Variables).Distinct();
+        public override IEnumerable<string> Variables { get; }
+        public override bool ContainsVariables { get; }
 
         public OperationExpression(List<Expression> expressions, List<Operation> operations)
         {
@@ -29,6 +30,9 @@ namespace Rubidium
             {
                 throw new ArgumentException("Number of values must be exactly one more than number of operations");
             }
+
+            Variables = Expressions.SelectMany(x => x.Variables).Distinct();
+            ContainsVariables = Variables.Count() > 0;
         }
 
         public static Expression Multiply(List<Expression> expressions)
