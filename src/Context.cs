@@ -8,7 +8,7 @@ namespace Rubidium
     {
         private List<Statement> Statements { get; }
         private HashSet<string> Variables { get; }
-        private Dictionary<string, Fraction> BoundVariables { get; }
+        private Dictionary<string, Fraction> VariableValues { get; }
 
         public Context(List<Statement> initialStatements)
         {
@@ -29,7 +29,7 @@ namespace Rubidium
                 }
             }
 
-            BoundVariables = new Dictionary<string, Fraction>();
+            VariableValues = new Dictionary<string, Fraction>();
         }
 
         public bool FindNewStatements()
@@ -55,6 +55,15 @@ namespace Rubidium
                 else if (!s.Left.ContainsVariables)
                 {
                     Console.WriteLine($"{s} : {OperationExpression.Subtract(s.Left, s.Right) is LiteralExpression literal && literal.Value == 0}");
+                }
+                else if (s.Left is VariableExpression leftVariable && s.Right is LiteralExpression rightLiteral)
+                {
+                    if (VariableValues.ContainsKey(leftVariable.Name))
+                    {
+                        throw new Exception("Variable is already bound to a value");
+                    }
+
+                    VariableValues[leftVariable.Name] = rightLiteral.Value;
                 }
                 else
                 {
