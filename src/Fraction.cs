@@ -95,7 +95,7 @@ namespace Rubidium
 
         public override int GetHashCode() => Numerator.GetHashCode() ^ Denominator.GetHashCode();
 
-        public override string ToString() => $"({Numerator}/{Denominator})";
+        public override string ToString() => Denominator == 1 ? Numerator.ToString() : $"({Numerator}/{Denominator})";
 
         public static implicit operator Fraction(BigInteger b) => new Fraction(b);
 
