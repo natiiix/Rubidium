@@ -11,7 +11,9 @@ namespace Rubidium
             {
                 "c = (((3a))) + b",
                 "b = a",
-                "a = 2"
+                "2 = a",
+                "7 = 12",
+                "4 = 4"
             };
 
             List<Token> tokens = Lexer.Tokenize(string.Join(';', query));

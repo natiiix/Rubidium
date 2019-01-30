@@ -4,6 +4,8 @@ namespace Rubidium
 {
     public class LiteralExpression : Expression
     {
+        public static LiteralExpression Zero => new LiteralExpression(0);
+
         public Fraction Value { get; }
 
         public override IEnumerable<string> Variables { get; } = new string[0];

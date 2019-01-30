@@ -57,6 +57,16 @@ namespace Rubidium
             return new OperationExpression(new List<Expression>(expressions), operations);
         }
 
+        public static Expression Subtract(Expression first, Expression second)
+        {
+            if (first is LiteralExpression firstLiteral && second is LiteralExpression secondLiteral)
+            {
+                return new LiteralExpression(firstLiteral.Value - secondLiteral.Value);
+            }
+
+            return new OperationExpression(new List<Expression>() { first, second }, new List<Operation>() { Operation.Subtraction });
+        }
+
         public override string ToString()
         {
             string str = string.Empty;

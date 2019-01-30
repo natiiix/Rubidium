@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using System.Linq;
 
@@ -33,6 +34,27 @@ namespace Rubidium
 
         public bool FindNewStatements()
         {
+            for (int i = 0; i < Statements.Count; i++)
+            {
+                Statement s = Statements[i];
+
+                if (s.Right.ContainsVariables)
+                {
+                    if (!s.Left.ContainsVariables)
+                    {
+                        Statements.Add(new Statement(s.Right, s.Left));
+                    }
+                    else
+                    {
+                        Statements.Add(new Statement(OperationExpression.Subtract(s.Left, s.Right), LiteralExpression.Zero));
+                    }
+                }
+                else if (!s.Left.ContainsVariables)
+                {
+                    Console.WriteLine($"{s}: {OperationExpression.Subtract(s.Left, s.Right) is LiteralExpression literal && literal.Value == 0}");
+                }
+            }
+
             return false;
         }
     }
