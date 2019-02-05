@@ -78,9 +78,6 @@ namespace Rubidium
             return new OperationExpression(expressions, operations);
         }
 
-        public static Expression Subtract(Expression first, Expression second) =>
-            AdditionExpression.Build(new List<Expression>() { first, NegatedExpression.Build(second) });
-
         private static LiteralExpression Evaluate(IEnumerable<LiteralExpression> expressions, IEnumerable<Operation> operations)
         {
             LinkedList<Fraction> values = new LinkedList<Fraction>(expressions.Select(x => x.Value));

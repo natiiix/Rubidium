@@ -54,12 +54,12 @@ namespace Rubidium
                     }
                     else
                     {
-                        newStatements.Add(new Statement(OperationExpression.Subtract(s.Left, s.Right), LiteralExpression.Zero));
+                        newStatements.Add(new Statement(s.Left - s.Right, LiteralExpression.Zero));
                     }
                 }
                 else if (!s.Left.ContainsVariables)
                 {
-                    Console.WriteLine($"{s} : {OperationExpression.Subtract(s.Left, s.Right) is LiteralExpression literal && literal.Value == 0}");
+                    Console.WriteLine($"{s} : {(s.Left - s.Right) is LiteralExpression literal && literal.Value == 0}");
                 }
                 else
                 {
