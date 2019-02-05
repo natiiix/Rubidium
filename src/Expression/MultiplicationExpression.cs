@@ -46,7 +46,7 @@ namespace Rubidium
                 }
             }
 
-            if (coefficient == Fraction.Zero || variableParts.Count == 0)
+            if (coefficient.IsZero || variableParts.Count == 0)
             {
                 return new ConstantExpression(coefficient);
             }

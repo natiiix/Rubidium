@@ -50,7 +50,7 @@ namespace Rubidium
             {
                 return new ConstantExpression(constantPart);
             }
-            else if (constantPart == Fraction.Zero && variableParts.Count == 1)
+            else if (constantPart.IsZero && variableParts.Count == 1)
             {
                 return variableParts[0];
             }
@@ -66,6 +66,6 @@ namespace Rubidium
             Build(Constant, VariableParts.Select(x => x.SubstituteVariables(variableValues)));
 
         public override string ToString() =>
-            "(" + (Constant == Fraction.Zero ? string.Empty : $"{Constant} + ") + string.Join(" + ", VariableParts.Select(x => x.ToString())) + ")";
+            "(" + (Constant.IsZero ? string.Empty : $"{Constant} + ") + string.Join(" + ", VariableParts.Select(x => x.ToString())) + ")";
     }
 }
