@@ -27,6 +27,20 @@ namespace Rubidium
                 {
                     literalPart += literal.Value;
                 }
+                else if (expr is AdditionExpression addition)
+                {
+                    foreach (Expression subExpr in addition.Expressions)
+                    {
+                        if (subExpr is LiteralExpression subLiteral)
+                        {
+                            literalPart += subLiteral.Value;
+                        }
+                        else
+                        {
+                            variableParts.Add(subExpr);
+                        }
+                    }
+                }
                 else
                 {
                     variableParts.Add(expr);
