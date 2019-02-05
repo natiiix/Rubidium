@@ -21,10 +21,8 @@ namespace Rubidium
             Fraction literalPart = Fraction.Zero;
             List<Expression> variableParts = new List<Expression>();
 
-            for (int i = 0; i < expressions.Count; i++)
+            foreach (Expression expr in expressions)
             {
-                Expression expr = expressions[i];
-
                 if (expr is LiteralExpression literal)
                 {
                     literalPart += literal.Value;

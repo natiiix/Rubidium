@@ -21,10 +21,8 @@ namespace Rubidium
             Fraction coefficient = Fraction.One;
             List<Expression> newExpressions = new List<Expression>();
 
-            for (int i = 0; i < expressions.Count; i++)
+            foreach (Expression expr in expressions)
             {
-                Expression expr = expressions[i];
-
                 if (expr is LiteralExpression literal)
                 {
                     coefficient *= literal.Value;
