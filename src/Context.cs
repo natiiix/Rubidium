@@ -46,6 +46,12 @@ namespace Rubidium
                         keepStatements.Add(s);
                     }
                 }
+                else if (s.Left is MultiplicationExpression leftMultiplication &&
+                    leftMultiplication.VariableParts.Count == 1 &&
+                    leftMultiplication.VariableParts[0] is VariableExpression)
+                {
+                    newStatements.Add(new Statement(leftMultiplication.VariableParts[0], s.Right / leftMultiplication.Coefficient));
+                }
                 else if (s.Right.ContainsVariables)
                 {
                     if (!s.Left.ContainsVariables)
