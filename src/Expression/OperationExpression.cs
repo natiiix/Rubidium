@@ -25,7 +25,7 @@ namespace Rubidium
             Expressions = expressions;
             Operations = operations;
 
-            Variables = Expressions.SelectMany(x => x.Variables).Distinct();
+            Variables = Expressions.GetVariables();
         }
 
         protected OperationExpression(List<Expression> expressions, Operation op) :
