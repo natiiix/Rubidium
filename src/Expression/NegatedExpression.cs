@@ -32,6 +32,6 @@ namespace Rubidium
         public override Expression SubstituteVariables(Dictionary<string, Fraction> variableValues) =>
             Build(Expression.SubstituteVariables(variableValues));
 
-        public override string ToString() => $"-{Expression}";
+        public override string ToString() => $"-({Expression})";
     }
 }
