@@ -41,15 +41,14 @@ namespace Rubidium
                     constantPart += addition.Constant;
                     variableParts.AddRange(addition.VariableParts);
                 }
-                else if (expr is VariableExpression loneVar)
+                else if (expr is VariableExpression variable)
                 {
-                    variableCoefficients[loneVar.Name] = (variableCoefficients.GetValueOrDefault(loneVar.Name) ?? Fraction.Zero) + Fraction.One;
+                    variableCoefficients[variable.Name] = (variableCoefficients.GetValueOrDefault(variable.Name) ?? Fraction.Zero) + Fraction.One;
                 }
-                else if (expr is MultiplicationExpression multiplication &&
-                    multiplication.VariableParts.Count == 1 &&
-                    multiplication.VariableParts[0] is VariableExpression varWithCoeff)
+                else if (expr is MultiplicationExpression multiplication && multiplication.IsVariableWithCoefficient)
                 {
-                    variableCoefficients[varWithCoeff.Name] = (variableCoefficients.GetValueOrDefault(varWithCoeff.Name) ?? Fraction.Zero) + multiplication.Coefficient;
+                    string varName = (multiplication.VariableParts[0] as VariableExpression).Name;
+                    variableCoefficients[varName] = (variableCoefficients.GetValueOrDefault(varName) ?? Fraction.Zero) + multiplication.Coefficient;
                 }
                 else
                 {

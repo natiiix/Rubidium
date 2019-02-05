@@ -9,6 +9,8 @@ namespace Rubidium
         public Fraction Coefficient { get; }
         public List<Expression> VariableParts { get; }
 
+        public bool IsVariableWithCoefficient => VariableParts.Count == 1 && VariableParts[0] is VariableExpression;
+
         public override IEnumerable<string> Variables { get; }
 
         private MultiplicationExpression(Fraction coefficient, List<Expression> variableParts)
@@ -66,6 +68,8 @@ namespace Rubidium
             Build(Coefficient, VariableParts.Select(x => x.SubstituteVariables(variableValues)));
 
         public override string ToString() =>
+            IsVariableWithCoefficient ?
+            $"{Coefficient}{VariableParts[0]}" :
             "(" + (Coefficient == Fraction.One ? string.Empty : $"{Coefficient} * ") + string.Join(" * ", VariableParts.Select(x => x.ToString())) + ")";
     }
 }
