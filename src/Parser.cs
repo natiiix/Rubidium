@@ -91,6 +91,7 @@ namespace Rubidium
             List<Operation> operations = new List<Operation>();
 
             List<Expression> parts = new List<Expression>();
+            bool isNegated = false;
 
             for (int i = 0; i < tokens.Count; i++)
             {
@@ -98,12 +99,16 @@ namespace Rubidium
                 {
                     if (parts.Count == 0 && op == Operation.Subtraction)
                     {
-                        parts.Add(new LiteralExpression(-1));
+                        isNegated = !isNegated;
                     }
                     else
                     {
-                        expressions.Add(OperationExpression.BuildMultiplication(parts));
+                        Expression partsMultiplication = OperationExpression.BuildMultiplication(parts);
+                        expressions.Add(isNegated ? NegatedExpression.Build(partsMultiplication) : partsMultiplication);
+
                         parts.Clear();
+                        isNegated = false;
+
                         operations.Add(op);
                     }
                 }
@@ -139,7 +144,8 @@ namespace Rubidium
                 }
             }
 
-            expressions.Add(OperationExpression.BuildMultiplication(parts));
+            Expression finalPartsMultiplication = OperationExpression.BuildMultiplication(parts);
+            expressions.Add(isNegated ? NegatedExpression.Build(finalPartsMultiplication) : finalPartsMultiplication);
             return OperationExpression.Build(expressions, operations);
         }
 
