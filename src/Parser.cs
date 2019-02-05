@@ -93,25 +93,28 @@ namespace Rubidium
 
         private static Expression ParseMultiplication(List<Token> tokens, int start, out int length)
         {
-            List<Expression> parts = new List<Expression>();
+            List<Expression> numeratorParts = new List<Expression>() { ConstantExpression.One };
+            List<Expression> denominatorParts = new List<Expression>() { ConstantExpression.One };
 
             Expression firstPart = ParseExponent(tokens, start, out int firstLen);
-            parts.Add(firstPart);
+            numeratorParts.Add(firstPart);
 
             int end = start + firstLen;
+            bool lastWasDivision = false;
 
             while (end < tokens.Count)
             {
-                if (tokens[end] is SpecialToken special && special.Multiplication)
+                if (tokens[end] is SpecialToken special && (special.Multiplication || special.Division))
                 {
                     Expression nextPart = ParseExponent(tokens, end + 1, out int nextLen);
-                    parts.Add(nextPart);
+                    (special.Division ? denominatorParts : numeratorParts).Add(nextPart);
                     end += 1 + nextLen;
+                    lastWasDivision = special.Division;
                 }
                 else if (tokens[end] is SymbolToken || tokens[end] is IntegerToken)
                 {
                     Expression nextPart = ParseExponent(tokens, end, out int nextLen);
-                    parts.Add(nextPart);
+                    (lastWasDivision ? denominatorParts : numeratorParts).Add(nextPart);
                     end += nextLen;
                 }
                 else
@@ -121,7 +124,11 @@ namespace Rubidium
             }
 
             length = end - start;
-            return MultiplicationExpression.Build(parts);
+
+            return FractionExpression.Build(
+                MultiplicationExpression.Build(numeratorParts),
+                MultiplicationExpression.Build(denominatorParts)
+            );
         }
 
         private static Expression ParseExponent(List<Token> tokens, int start, out int length)
