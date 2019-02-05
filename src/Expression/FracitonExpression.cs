@@ -12,11 +12,27 @@ namespace Rubidium
 
         private FractionExpression(Expression numerator, Expression denominator)
         {
+            Numerator = numerator;
+            Denominator = denominator;
+
             Variables = new Expression[] { numerator, denominator }.GetVariables();
         }
 
         public static Expression Build(Expression numerator, Expression denominator)
         {
+            if (denominator is ConstantExpression denomConst)
+            {
+                return numerator * new ConstantExpression(~denomConst.Value);
+            }
+            else if (numerator is FractionExpression numerFract)
+            {
+                return Build(numerFract.Numerator, numerFract.Denominator * denominator);
+            }
+            else if (denominator is FractionExpression denomFract)
+            {
+                return Build(numerator * denomFract.Denominator, denomFract.Numerator);
+            }
+
             return new FractionExpression(numerator, denominator);
         }
 
