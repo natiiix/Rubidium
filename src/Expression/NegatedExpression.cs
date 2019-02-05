@@ -1,0 +1,39 @@
+using System.Collections.Generic;
+
+namespace Rubidium
+{
+    public class NegatedExpression : Expression
+    {
+        public override IEnumerable<string> Variables => Expression.Variables;
+
+        public override bool ContainsVariables => Expression.ContainsVariables;
+
+        public Expression Expression { get; }
+
+        internal NegatedExpression(Expression expr)
+        {
+            Expression = expr;
+        }
+
+        public static Expression Build(Expression expr)
+        {
+            if (expr is NegatedExpression negated)
+            {
+                return negated.Expression;
+            }
+            else if (expr is LiteralExpression literal)
+            {
+                return new LiteralExpression(-literal.Value);
+            }
+            else
+            {
+                return new NegatedExpression(expr);
+            }
+        }
+
+        public override Expression SubstituteVariables(Dictionary<string, Fraction> variableValues)
+        {
+            throw new System.NotImplementedException();
+        }
+    }
+}
