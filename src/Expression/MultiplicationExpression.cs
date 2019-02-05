@@ -19,7 +19,7 @@ namespace Rubidium
             }
 
             Fraction coefficient = Fraction.One;
-            List<Expression> newExpressions = new List<Expression>();
+            List<Expression> variableParts = new List<Expression>();
 
             foreach (Expression expr in expressions)
             {
@@ -27,22 +27,36 @@ namespace Rubidium
                 {
                     coefficient *= literal.Value;
                 }
+                else if (expr is MultiplicationExpression multiplication)
+                {
+                    foreach (Expression subExpr in multiplication.Expressions)
+                    {
+                        if (subExpr is LiteralExpression subLiteral)
+                        {
+                            coefficient *= subLiteral.Value;
+                        }
+                        else
+                        {
+                            variableParts.Add(subExpr);
+                        }
+                    }
+                }
                 else
                 {
-                    newExpressions.Add(expr);
+                    variableParts.Add(expr);
                 }
             }
 
-            if (coefficient == Fraction.Zero || newExpressions.Count == 0)
+            if (coefficient == Fraction.Zero || variableParts.Count == 0)
             {
                 return new LiteralExpression(coefficient);
             }
             else if (coefficient != Fraction.One)
             {
-                newExpressions.Add(new LiteralExpression(coefficient));
+                variableParts.Add(new LiteralExpression(coefficient));
             }
 
-            return new MultiplicationExpression(newExpressions);
+            return new MultiplicationExpression(variableParts);
         }
     }
 }
