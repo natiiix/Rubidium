@@ -80,15 +80,8 @@ namespace Rubidium
             return new OperationExpression(expressions, operations);
         }
 
-        public static Expression Subtract(Expression first, Expression second)
-        {
-            if (first is LiteralExpression firstLiteral && second is LiteralExpression secondLiteral)
-            {
-                return new LiteralExpression(firstLiteral.Value - secondLiteral.Value);
-            }
-
-            return new OperationExpression(new List<Expression>() { first, second }, Operation.Subtraction);
-        }
+        public static Expression Subtract(Expression first, Expression second) =>
+            AdditionExpression.Build(new List<Expression>() { first, NegatedExpression.Build(second) });
 
         private static LiteralExpression Evaluate(IEnumerable<LiteralExpression> expressions, IEnumerable<Operation> operations)
         {
