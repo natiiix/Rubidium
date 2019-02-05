@@ -28,6 +28,10 @@ namespace Rubidium
             {
                 return AdditionExpression.Build(-addition.Constant, addition.VariableParts.Select(x => NegatedExpression.Build(x)));
             }
+            else if (expr is MultiplicationExpression multiplication)
+            {
+                return MultiplicationExpression.Build(-multiplication.Coefficient, multiplication.VariableParts);
+            }
             else
             {
                 return new NegatedExpression(expr);
