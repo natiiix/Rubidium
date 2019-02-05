@@ -23,7 +23,7 @@ namespace Rubidium
         {
             if (expressions.Count == 0)
             {
-                throw new Exception("Unable to make multiplication expression from zero expressions");
+                return new LiteralExpression(baseCoefficient);
             }
 
             Fraction coefficient = baseCoefficient;
