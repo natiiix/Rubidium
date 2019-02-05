@@ -57,6 +57,21 @@ namespace Rubidium
             {
                 return BuildAddition(expressions);
             }
+            else if (operations.All(x => x == Operation.Addition || x == Operation.Subtraction))
+            {
+                List<Expression> newExpressions = new List<Expression>(expressions);
+
+                for (int i = 0; i < operations.Count; i++)
+                {
+                    if (operations[i] == Operation.Subtraction)
+                    {
+                        int exprIndex = i + 1;
+                        newExpressions[exprIndex] = NegatedExpression.Build(newExpressions[exprIndex]);
+                    }
+                }
+
+                return BuildAddition(newExpressions);
+            }
             else if (operations.All(x => x == Operation.Multiplication))
             {
                 return BuildMultiplication(expressions);
