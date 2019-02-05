@@ -50,22 +50,24 @@ namespace Rubidium
                     leftMultiplication.VariableParts.Count == 1 &&
                     leftMultiplication.VariableParts[0] is VariableExpression)
                 {
-                    newStatements.Add(new Statement(leftMultiplication.VariableParts[0], s.Right / leftMultiplication.Coefficient));
+                    newStatements.Add(new Statement(
+                        leftMultiplication.VariableParts[0],
+                        s.Right / leftMultiplication.Coefficient
+                    ));
                 }
                 else if (s.Left is AdditionExpression leftAddition && leftAddition.Constant != Fraction.Zero)
                 {
-                    newStatements.Add(new Statement(AdditionExpression.Build(leftAddition.VariableParts), s.Right + new ConstantExpression(-leftAddition.Constant)));
+                    newStatements.Add(new Statement(
+                        AdditionExpression.Build(leftAddition.VariableParts),
+                        s.Right + new ConstantExpression(-leftAddition.Constant)
+                    ));
                 }
                 else if (s.Right.ContainsVariables)
                 {
-                    if (!s.Left.ContainsVariables)
-                    {
-                        newStatements.Add(new Statement(s.Right, s.Left));
-                    }
-                    else
-                    {
-                        newStatements.Add(new Statement(s.Left - s.Right, ConstantExpression.Zero));
-                    }
+                    newStatements.Add(s.Left.ContainsVariables ?
+                        new Statement(s.Left - s.Right, ConstantExpression.Zero) :
+                        new Statement(s.Right, s.Left)
+                    );
                 }
                 else if (!s.Left.ContainsVariables)
                 {
