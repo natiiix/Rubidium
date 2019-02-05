@@ -9,10 +9,9 @@ namespace Rubidium
         {
             string[] query =
             {
-                "x1 = (-b + d) / (2a)",
-                "x2 = (-b - d) / (2a)",
-                "d = (b^2 - 4 a c)^(1/2)",
-                "a = 2; b = -8; c = -24"
+                "2x + y + 3z = 1",
+                "2x + 6y + 8z = 3",
+                "6x + 8y + 18z = 5"
             };
 
             List<Token> tokens = Lexer.Tokenize(string.Join(';', query));

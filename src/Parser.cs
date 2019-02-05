@@ -140,7 +140,7 @@ namespace Rubidium
             }
 
             expressions.Add(OperationExpression.Multiply(parts));
-            return expressions.Count == 1 && operations.Count == 0 ? expressions[0] : new OperationExpression(expressions, operations);
+            return OperationExpression.Build(expressions, operations);
         }
 
         private static bool IsOperationToken(Token token, out Operation op)

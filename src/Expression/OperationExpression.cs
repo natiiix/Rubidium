@@ -21,15 +21,10 @@ namespace Rubidium
         public override IEnumerable<string> Variables { get; }
         public override bool ContainsVariables { get; }
 
-        public OperationExpression(List<Expression> expressions, List<Operation> operations)
+        private OperationExpression(List<Expression> expressions, List<Operation> operations)
         {
             Expressions = expressions;
             Operations = operations;
-
-            if (expressions.Count != operations.Count + 1)
-            {
-                throw new ArgumentException("Number of values must be exactly one more than number of operations");
-            }
 
             Variables = Expressions.SelectMany(x => x.Variables).Distinct();
             ContainsVariables = Variables.Count() > 0;
@@ -109,6 +104,21 @@ namespace Rubidium
             }
         }
 
+        public static Expression Build(List<Expression> expressions, List<Operation> operations)
+        {
+            if (expressions.Count != operations.Count + 1)
+            {
+                throw new ArgumentException("Number of values must be exactly one more than number of operations");
+            }
+
+            if (expressions.Count == 1)
+            {
+                return expressions[0];
+            }
+
+            return new OperationExpression(expressions, operations);
+        }
+
         public static Expression Multiply(List<Expression> expressions)
         {
             if (expressions.Count == 0)
@@ -163,7 +173,19 @@ namespace Rubidium
                 return new LiteralExpression(firstLiteral.Value - secondLiteral.Value);
             }
 
-            return new OperationExpression(new List<Expression>() { first, second }, new List<Operation>() { Operation.Subtraction });
+            return new OperationExpression(new List<Expression>() { first, second }, GenerateOperations(Operation.Subtraction, 1));
+        }
+
+        protected static List<Operation> GenerateOperations(Operation op, int count)
+        {
+            List<Operation> operations = new List<Operation>(count);
+
+            for (int i = 0; i < count; i++)
+            {
+                operations.Add(op);
+            }
+
+            return operations;
         }
 
         public override string ToString()
