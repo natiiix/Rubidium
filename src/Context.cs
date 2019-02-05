@@ -52,6 +52,10 @@ namespace Rubidium
                 {
                     newStatements.Add(new Statement(leftMultiplication.VariableParts[0], s.Right / leftMultiplication.Coefficient));
                 }
+                else if (s.Left is AdditionExpression leftAddition && leftAddition.Constant != Fraction.Zero)
+                {
+                    newStatements.Add(new Statement(AdditionExpression.Build(leftAddition.VariableParts), s.Right + new ConstantExpression(-leftAddition.Constant)));
+                }
                 else if (s.Right.ContainsVariables)
                 {
                     if (!s.Left.ContainsVariables)
