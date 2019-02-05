@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using System.Linq;
 
 namespace Rubidium
 {
@@ -22,6 +23,10 @@ namespace Rubidium
             else if (expr is ConstantExpression constant)
             {
                 return new ConstantExpression(-constant.Value);
+            }
+            else if (expr is AdditionExpression addition)
+            {
+                return AdditionExpression.Build(-addition.Constant, addition.VariableParts.Select(x => NegatedExpression.Build(x)));
             }
             else
             {
