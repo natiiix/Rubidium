@@ -19,9 +19,9 @@ namespace Rubidium
             Variables = variableParts.GetVariables();
         }
 
-        public static Expression Build(Fraction baseConstant, List<Expression> expressions)
+        public static Expression Build(Fraction baseConstant, IEnumerable<Expression> expressions)
         {
-            if (expressions.Count == 0)
+            if (expressions.Count() == 0)
             {
                 return new LiteralExpression(baseConstant);
             }
@@ -58,10 +58,12 @@ namespace Rubidium
             return new AdditionExpression(constantPart, variableParts);
         }
 
-        public static Expression Build(List<Expression> expressions) => Build(Fraction.Zero, expressions);
+        public static Expression Build(IEnumerable<Expression> expressions) => Build(Fraction.Zero, expressions);
+
+        public static Expression Build(params Expression[] expressions) => Build(expressions as IEnumerable<Expression>);
 
         public override Expression SubstituteVariables(Dictionary<string, Fraction> variableValues) =>
-            Build(Constant, VariableParts.Select(x => x.SubstituteVariables(variableValues)).ToList());
+            Build(Constant, VariableParts.Select(x => x.SubstituteVariables(variableValues)));
 
         public override string ToString() =>
             $"( {Constant} + {string.Join(" + ", VariableParts.Select(x => x.ToString()))} )";
