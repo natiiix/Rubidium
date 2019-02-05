@@ -28,6 +28,7 @@ namespace Rubidium
 
             Fraction constantPart = baseConstant;
             List<Expression> variableParts = new List<Expression>();
+            Dictionary<string, Fraction> variableCoefficients = new Dictionary<string, Fraction>();
 
             foreach (Expression expr in expressions)
             {
@@ -40,10 +41,25 @@ namespace Rubidium
                     constantPart += addition.Constant;
                     variableParts.AddRange(addition.VariableParts);
                 }
+                else if (expr is VariableExpression loneVar)
+                {
+                    variableCoefficients[loneVar.Name] = (variableCoefficients.GetValueOrDefault(loneVar.Name) ?? Fraction.Zero) + Fraction.One;
+                }
+                else if (expr is MultiplicationExpression multiplication &&
+                    multiplication.VariableParts.Count == 1 &&
+                    multiplication.VariableParts[0] is VariableExpression varWithCoeff)
+                {
+                    variableCoefficients[varWithCoeff.Name] = (variableCoefficients.GetValueOrDefault(varWithCoeff.Name) ?? Fraction.Zero) + multiplication.Coefficient;
+                }
                 else
                 {
                     variableParts.Add(expr);
                 }
+            }
+
+            foreach (var coeff in variableCoefficients)
+            {
+                variableParts.Add(new ConstantExpression(coeff.Value) * new VariableExpression(coeff.Key));
             }
 
             if (variableParts.Count == 0)
