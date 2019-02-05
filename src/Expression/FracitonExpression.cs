@@ -22,7 +22,7 @@ namespace Rubidium
         {
             if (denominator is ConstantExpression denomConst)
             {
-                return numerator * new ConstantExpression(~denomConst.Value);
+                return denomConst.Value == Fraction.One ? numerator : numerator * new ConstantExpression(~denomConst.Value);
             }
             else if (numerator is FractionExpression numerFract)
             {
@@ -32,8 +32,10 @@ namespace Rubidium
             {
                 return Build(numerator * denomFract.Denominator, denomFract.Numerator);
             }
-
-            return new FractionExpression(numerator, denominator);
+            else
+            {
+                return new FractionExpression(numerator, denominator);
+            }
         }
 
         public override Expression SubstituteVariables(Dictionary<string, Fraction> variableValues) =>
