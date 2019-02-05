@@ -55,12 +55,29 @@ namespace Rubidium
                         s.Right / new ConstantExpression(leftMultiplication.Coefficient)
                     ));
                 }
-                else if (s.Left is AdditionExpression leftAddition && leftAddition.Constant != Fraction.Zero)
+                else if (s.Left is AdditionExpression leftAddition &&
+                    (s.Right is AdditionExpression || !leftAddition.Constant.IsZero))
                 {
-                    newStatements.Add(new Statement(
-                        AdditionExpression.Build(leftAddition.VariableParts),
-                        s.Right + new ConstantExpression(-leftAddition.Constant)
-                    ));
+                    if (s.Right is AdditionExpression rightAddition)
+                    {
+                        Fraction constant = rightAddition.Constant - leftAddition.Constant;
+                        List<Expression> variableParts = new List<Expression>();
+
+                        variableParts.AddRange(leftAddition.VariableParts);
+                        variableParts.AddRange(rightAddition.VariableParts.Select(x => -x));
+
+                        newStatements.Add(new Statement(
+                            AdditionExpression.Build(variableParts),
+                            new ConstantExpression(constant)
+                        ));
+                    }
+                    else
+                    {
+                        newStatements.Add(new Statement(
+                            AdditionExpression.Build(leftAddition.VariableParts),
+                            s.Right + new ConstantExpression(-leftAddition.Constant)
+                        ));
+                    }
                 }
                 else if (s.Right.ContainsVariables)
                 {
@@ -69,7 +86,7 @@ namespace Rubidium
                         new Statement(s.Right, s.Left)
                     );
                 }
-                else if (!s.Left.ContainsVariables)
+                else if (!s.Left.ContainsVariables && !s.Right.ContainsVariables)
                 {
                     Console.WriteLine($"{s} : {(s.Left - s.Right) is ConstantExpression constant && constant.Value == 0}");
                 }
