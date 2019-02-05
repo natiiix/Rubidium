@@ -10,7 +10,7 @@ namespace Rubidium
 
         public Expression Expression { get; }
 
-        internal NegatedExpression(Expression expr)
+        private NegatedExpression(Expression expr)
         {
             Expression = expr;
         }
@@ -31,9 +31,7 @@ namespace Rubidium
             }
         }
 
-        public override Expression SubstituteVariables(Dictionary<string, Fraction> variableValues)
-        {
-            throw new System.NotImplementedException();
-        }
+        public override Expression SubstituteVariables(Dictionary<string, Fraction> variableValues) =>
+            Build(Expression.SubstituteVariables(variableValues));
     }
 }
