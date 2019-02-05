@@ -40,5 +40,7 @@ namespace Rubidium
 
         public override Expression SubstituteVariables(Dictionary<string, Fraction> variableValues) =>
             Build(Numerator.SubstituteVariables(variableValues), Denominator.SubstituteVariables(variableValues));
+
+        public override string ToString() => $"({Numerator} / {Denominator})";
     }
 }
