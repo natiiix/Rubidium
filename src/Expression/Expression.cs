@@ -22,7 +22,7 @@ namespace Rubidium
         public static Expression operator *(Expression first, Expression second) =>
             MultiplicationExpression.Build(first, second);
 
-        public static Expression operator /(Expression expr, Fraction value) =>
-            expr * new ConstantExpression(~value);
+        public static Expression operator /(Expression first, Expression second) =>
+            FractionExpression.Build(first, second);
     }
 }
