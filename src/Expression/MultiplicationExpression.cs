@@ -63,7 +63,7 @@ namespace Rubidium
         public static Expression Build(params Expression[] expressions) => Build(expressions as IEnumerable<Expression>);
 
         public override Expression SubstituteVariables(Dictionary<string, Fraction> variableValues) =>
-            Build(Coefficient, VariableParts.Select(x => x.SubstituteVariables(variableValues)).ToList());
+            Build(Coefficient, VariableParts.Select(x => x.SubstituteVariables(variableValues)));
 
         public override string ToString() =>
             $"( {Coefficient} * {string.Join(" * ", VariableParts.Select(x => x.ToString()))} )";
