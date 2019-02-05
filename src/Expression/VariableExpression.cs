@@ -19,7 +19,7 @@ namespace Rubidium
         {
             if (variableValues.ContainsKey(Name))
             {
-                return new LiteralExpression(variableValues[Name]);
+                return new ConstantExpression(variableValues[Name]);
             }
             else
             {

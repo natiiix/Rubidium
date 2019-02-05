@@ -19,9 +19,9 @@ namespace Rubidium
             {
                 return negated.Expression;
             }
-            else if (expr is LiteralExpression literal)
+            else if (expr is ConstantExpression constant)
             {
-                return new LiteralExpression(-literal.Value);
+                return new ConstantExpression(-constant.Value);
             }
             else
             {

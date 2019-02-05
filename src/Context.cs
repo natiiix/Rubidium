@@ -31,14 +31,14 @@ namespace Rubidium
                 }
                 else if (s.Left is VariableExpression leftVariable)
                 {
-                    if (s.Right is LiteralExpression rightLiteral)
+                    if (s.Right is ConstantExpression rightConst)
                     {
                         if (VariableValues.ContainsKey(leftVariable.Name))
                         {
                             throw new Exception("Variable is already bound to a value");
                         }
 
-                        VariableValues[leftVariable.Name] = rightLiteral.Value;
+                        VariableValues[leftVariable.Name] = rightConst.Value;
                         newVariablesBound++;
                     }
                     else
@@ -60,12 +60,12 @@ namespace Rubidium
                     }
                     else
                     {
-                        newStatements.Add(new Statement(s.Left - s.Right, LiteralExpression.Zero));
+                        newStatements.Add(new Statement(s.Left - s.Right, ConstantExpression.Zero));
                     }
                 }
                 else if (!s.Left.ContainsVariables)
                 {
-                    Console.WriteLine($"{s} : {(s.Left - s.Right) is LiteralExpression literal && literal.Value == 0}");
+                    Console.WriteLine($"{s} : {(s.Left - s.Right) is ConstantExpression constant && constant.Value == 0}");
                 }
                 else
                 {

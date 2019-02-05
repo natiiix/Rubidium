@@ -23,6 +23,6 @@ namespace Rubidium
             MultiplicationExpression.Build(first, second);
 
         public static Expression operator /(Expression expr, Fraction value) =>
-            expr * new LiteralExpression(~value);
+            expr * new ConstantExpression(~value);
     }
 }

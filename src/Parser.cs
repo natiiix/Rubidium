@@ -77,7 +77,7 @@ namespace Rubidium
             {
                 if (tokens[0] is IntegerToken integer)
                 {
-                    return new LiteralExpression(integer.IntegerValue);
+                    return new ConstantExpression(integer.IntegerValue);
                 }
                 else if (tokens[0] is SymbolToken symbol)
                 {

@@ -23,7 +23,7 @@ namespace Rubidium
         {
             if (expressions.Count() == 0)
             {
-                return new LiteralExpression(baseCoefficient);
+                return new ConstantExpression(baseCoefficient);
             }
 
             Fraction coefficient = baseCoefficient;
@@ -31,9 +31,9 @@ namespace Rubidium
 
             foreach (Expression expr in expressions)
             {
-                if (expr is LiteralExpression literal)
+                if (expr is ConstantExpression constant)
                 {
-                    coefficient *= literal.Value;
+                    coefficient *= constant.Value;
                 }
                 else if (expr is MultiplicationExpression multiplication)
                 {
@@ -48,7 +48,7 @@ namespace Rubidium
 
             if (coefficient == Fraction.Zero || variableParts.Count == 0)
             {
-                return new LiteralExpression(coefficient);
+                return new ConstantExpression(coefficient);
             }
             else if (coefficient == Fraction.One && variableParts.Count == 1)
             {

@@ -47,9 +47,9 @@ namespace Rubidium
                 return expressions[0];
             }
 
-            if (expressions.All(x => x is LiteralExpression))
+            if (expressions.All(x => x is ConstantExpression))
             {
-                return Evaluate(expressions.Select(x => x as LiteralExpression), operations);
+                return Evaluate(expressions.Select(x => x as ConstantExpression), operations);
             }
             else if (operations.All(x => x == Operation.Addition))
             {
@@ -78,7 +78,7 @@ namespace Rubidium
             return new OperationExpression(expressions, operations);
         }
 
-        private static LiteralExpression Evaluate(IEnumerable<LiteralExpression> expressions, IEnumerable<Operation> operations)
+        private static ConstantExpression Evaluate(IEnumerable<ConstantExpression> expressions, IEnumerable<Operation> operations)
         {
             LinkedList<Fraction> values = new LinkedList<Fraction>(expressions.Select(x => x.Value));
             LinkedList<Operation> opList = new LinkedList<Operation>(operations);
@@ -140,7 +140,7 @@ namespace Rubidium
                 throw new Exception("Unexpected post-evaluation state");
             }
 
-            return new LiteralExpression(values.First.Value);
+            return new ConstantExpression(values.First.Value);
         }
 
         private static List<Operation> GenerateOperations(Operation op, int count)
