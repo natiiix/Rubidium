@@ -31,5 +31,7 @@ namespace Rubidium
 
         public override Expression SubstituteVariables(Dictionary<string, Fraction> variableValues) =>
             Build(BaseValue.SubstituteVariables(variableValues), Exponent.SubstituteVariables(variableValues));
+
+        public override string ToString() => $"({BaseValue}^{Exponent})";
     }
 }
