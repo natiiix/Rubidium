@@ -127,7 +127,7 @@ namespace Rubidium
                 }
 
                 str += "Variables:" + Environment.NewLine +
-                    string.Join(Environment.NewLine, VariableValues.Select(x => $"{x.Key} = {x.Value}"));
+                    string.Join(Environment.NewLine, VariableValues.Select(x => $"{x.Key} = {x.Value}" + (x.Value.Denominator == Fraction.One ? string.Empty : $" = {(double)x.Value:g}")));
             }
 
             return str;
