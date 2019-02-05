@@ -6,8 +6,6 @@ namespace Rubidium
     {
         public override IEnumerable<string> Variables => Expression.Variables;
 
-        public override bool ContainsVariables => Expression.ContainsVariables;
-
         public Expression Expression { get; }
 
         private NegatedExpression(Expression expr)

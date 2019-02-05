@@ -19,7 +19,6 @@ namespace Rubidium
         public List<Operation> Operations { get; }
 
         public override IEnumerable<string> Variables { get; }
-        public override bool ContainsVariables { get; }
 
         protected OperationExpression(List<Expression> expressions, List<Operation> operations)
         {
@@ -27,7 +26,6 @@ namespace Rubidium
             Operations = operations;
 
             Variables = Expressions.SelectMany(x => x.Variables).Distinct();
-            ContainsVariables = Variables.Count() > 0;
         }
 
         protected OperationExpression(List<Expression> expressions, Operation op) :

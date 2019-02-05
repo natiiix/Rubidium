@@ -7,7 +7,6 @@ namespace Rubidium
         public string Name { get; }
 
         public override IEnumerable<string> Variables { get; }
-        public override bool ContainsVariables { get; } = true;
 
         public VariableExpression(string name)
         {
