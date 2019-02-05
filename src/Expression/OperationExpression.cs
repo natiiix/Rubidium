@@ -34,79 +34,8 @@ namespace Rubidium
             this(expressions, GenerateOperations(op, expressions.Count - 1))
         { }
 
-        public override Expression SubstituteVariables(Dictionary<string, Fraction> variableValues)
-        {
-            IEnumerable<Expression> expressions = Expressions.Select(x => x.SubstituteVariables(variableValues));
-
-            if (expressions.All(x => x is LiteralExpression))
-            {
-                LinkedList<Fraction> values = new LinkedList<Fraction>(expressions.Select(x => (x as LiteralExpression).Value));
-                LinkedList<Operation> operations = new LinkedList<Operation>(Operations);
-
-                foreach (Operation op in OperationPrecedence)
-                {
-                    LinkedListNode<Fraction> leftNode = values.First;
-                    LinkedListNode<Operation> opNode = operations.First;
-
-                    while (opNode != null)
-                    {
-                        if (opNode.Value == op)
-                        {
-                            LinkedListNode<Fraction> rightNode = leftNode.Next;
-
-                            switch (op)
-                            {
-                                case Operation.Addition:
-                                    leftNode.Value += rightNode.Value;
-                                    break;
-
-                                case Operation.Subtraction:
-                                    leftNode.Value -= rightNode.Value;
-                                    break;
-
-                                case Operation.Multiplication:
-                                    leftNode.Value *= rightNode.Value;
-                                    break;
-
-                                case Operation.Division:
-                                    leftNode.Value /= rightNode.Value;
-                                    break;
-
-                                case Operation.Power:
-                                    leftNode.Value ^= rightNode.Value;
-                                    break;
-
-                                default:
-                                    throw new Exception("Invalid operation");
-                            }
-
-                            LinkedListNode<Operation> nextOpNode = opNode.Next;
-
-                            values.Remove(rightNode);
-                            operations.Remove(opNode);
-
-                            opNode = nextOpNode;
-                        }
-                        else
-                        {
-                            leftNode = leftNode.Next;
-                            opNode = opNode.Next;
-                        }
-                    }
-                }
-
-                if (values.Count != 1 || operations.Count != 0)
-                {
-                    throw new Exception("Unexpected post-evaluation state");
-                }
-
-                return new LiteralExpression(values.First.Value);
-            }
-            else
-            {
-                return new OperationExpression(expressions.ToList(), new List<Operation>(Operations));
-            }
-        }
+        public override Expression SubstituteVariables(Dictionary<string, Fraction> variableValues) =>
+            Build(Expressions.Select(x => x.SubstituteVariables(variableValues)).ToList(), Operations);
 
         public static Expression Build(List<Expression> expressions, List<Operation> operations)
         {
@@ -120,7 +49,11 @@ namespace Rubidium
                 return expressions[0];
             }
 
-            if (operations.All(x => x == Operation.Addition))
+            if (expressions.All(x => x is LiteralExpression))
+            {
+                return Evaluate(expressions.Select(x => x as LiteralExpression), operations);
+            }
+            else if (operations.All(x => x == Operation.Addition))
             {
                 return BuildAddition(expressions);
             }
@@ -220,6 +153,71 @@ namespace Rubidium
             }
 
             return new OperationExpression(new List<Expression>() { first, second }, Operation.Subtraction);
+        }
+
+        private static LiteralExpression Evaluate(IEnumerable<LiteralExpression> expressions, IEnumerable<Operation> operations)
+        {
+            LinkedList<Fraction> values = new LinkedList<Fraction>(expressions.Select(x => x.Value));
+            LinkedList<Operation> opList = new LinkedList<Operation>(operations);
+
+            foreach (Operation op in OperationPrecedence)
+            {
+                LinkedListNode<Fraction> leftNode = values.First;
+                LinkedListNode<Operation> opNode = opList.First;
+
+                while (opNode != null)
+                {
+                    if (opNode.Value == op)
+                    {
+                        LinkedListNode<Fraction> rightNode = leftNode.Next;
+
+                        switch (op)
+                        {
+                            case Operation.Addition:
+                                leftNode.Value += rightNode.Value;
+                                break;
+
+                            case Operation.Subtraction:
+                                leftNode.Value -= rightNode.Value;
+                                break;
+
+                            case Operation.Multiplication:
+                                leftNode.Value *= rightNode.Value;
+                                break;
+
+                            case Operation.Division:
+                                leftNode.Value /= rightNode.Value;
+                                break;
+
+                            case Operation.Power:
+                                leftNode.Value ^= rightNode.Value;
+                                break;
+
+                            default:
+                                throw new Exception("Invalid operation");
+                        }
+
+                        LinkedListNode<Operation> nextOpNode = opNode.Next;
+
+                        values.Remove(rightNode);
+                        opList.Remove(opNode);
+
+                        opNode = nextOpNode;
+                    }
+                    else
+                    {
+                        leftNode = leftNode.Next;
+                        opNode = opNode.Next;
+                    }
+                }
+            }
+
+            if (values.Count != 1 || opList.Count != 0)
+            {
+                throw new Exception("Unexpected post-evaluation state");
+            }
+
+            return new LiteralExpression(values.First.Value);
         }
 
         private static List<Operation> GenerateOperations(Operation op, int count)
