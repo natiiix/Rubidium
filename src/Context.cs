@@ -46,6 +46,10 @@ namespace Rubidium
                         keepStatements.Add(s);
                     }
                 }
+                else if (s.Right is VariableExpression rightVariable)
+                {
+                    newStatements.Add(new Statement(s.Right, s.Left));
+                }
                 else if (s.Left is MultiplicationExpression leftMultiplication &&
                     leftMultiplication.VariableParts.Count == 1 &&
                     leftMultiplication.VariableParts[0] is VariableExpression)
