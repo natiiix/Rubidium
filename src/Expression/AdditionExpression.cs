@@ -66,6 +66,6 @@ namespace Rubidium
             Build(Constant, VariableParts.Select(x => x.SubstituteVariables(variableValues)));
 
         public override string ToString() =>
-            $"( {Constant} + {string.Join(" + ", VariableParts.Select(x => x.ToString()))} )";
+            "( " + (Constant == Fraction.Zero ? string.Empty : $"{Constant} + ") + string.Join(" + ", VariableParts.Select(x => x.ToString())) + " )";
     }
 }
