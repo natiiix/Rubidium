@@ -38,7 +38,7 @@ namespace Rubidium
                             throw new Exception("Variable is already bound to a value");
                         }
 
-                        VariableValues[leftVariable.Name] = rightConst.Value;
+                        VariableValues[leftVariable.Name] = rightConst;
                         newVariablesBound++;
                     }
                     else

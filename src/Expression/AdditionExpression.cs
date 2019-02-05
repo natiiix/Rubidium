@@ -33,7 +33,7 @@ namespace Rubidium
             {
                 if (expr is ConstantExpression constant)
                 {
-                    constantPart += constant.Value;
+                    constantPart += constant;
                 }
                 else if (expr is AdditionExpression addition)
                 {

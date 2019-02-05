@@ -33,7 +33,7 @@ namespace Rubidium
             {
                 if (expr is ConstantExpression constant)
                 {
-                    coefficient *= constant.Value;
+                    coefficient *= constant;
                 }
                 else if (expr is MultiplicationExpression multiplication)
                 {
