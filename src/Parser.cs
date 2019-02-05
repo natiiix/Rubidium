@@ -103,7 +103,7 @@ namespace Rubidium
                     }
                     else
                     {
-                        Expression partsMultiplication = OperationExpression.BuildMultiplication(parts);
+                        Expression partsMultiplication = MultiplicationExpression.Build(parts);
                         expressions.Add(isNegated ? NegatedExpression.Build(partsMultiplication) : partsMultiplication);
 
                         parts.Clear();
@@ -144,7 +144,7 @@ namespace Rubidium
                 }
             }
 
-            Expression finalPartsMultiplication = OperationExpression.BuildMultiplication(parts);
+            Expression finalPartsMultiplication = MultiplicationExpression.Build(parts);
             expressions.Add(isNegated ? NegatedExpression.Build(finalPartsMultiplication) : finalPartsMultiplication);
             return OperationExpression.Build(expressions, operations);
         }
