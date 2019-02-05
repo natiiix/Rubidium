@@ -102,7 +102,7 @@ namespace Rubidium
                     }
                     else
                     {
-                        expressions.Add(OperationExpression.Multiply(parts));
+                        expressions.Add(OperationExpression.BuildMultiplication(parts));
                         parts.Clear();
                         operations.Add(op);
                     }
@@ -139,7 +139,7 @@ namespace Rubidium
                 }
             }
 
-            expressions.Add(OperationExpression.Multiply(parts));
+            expressions.Add(OperationExpression.BuildMultiplication(parts));
             return OperationExpression.Build(expressions, operations);
         }
 
