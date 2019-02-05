@@ -19,9 +19,9 @@ namespace Rubidium
             Variables = variableParts.GetVariables();
         }
 
-        public static Expression Build(Fraction baseCoefficient, List<Expression> expressions)
+        public static Expression Build(Fraction baseCoefficient, IEnumerable<Expression> expressions)
         {
-            if (expressions.Count == 0)
+            if (expressions.Count() == 0)
             {
                 return new LiteralExpression(baseCoefficient);
             }
@@ -58,7 +58,9 @@ namespace Rubidium
             return new MultiplicationExpression(coefficient, variableParts);
         }
 
-        public static Expression Build(List<Expression> expressions) => Build(Fraction.One, expressions);
+        public static Expression Build(IEnumerable<Expression> expressions) => Build(Fraction.One, expressions);
+
+        public static Expression Build(params Expression[] expressions) => Build(expressions as IEnumerable<Expression>);
 
         public override Expression SubstituteVariables(Dictionary<string, Fraction> variableValues) =>
             Build(Coefficient, VariableParts.Select(x => x.SubstituteVariables(variableValues)).ToList());
