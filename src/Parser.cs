@@ -60,93 +60,124 @@ namespace Rubidium
                 throw new Exception("Invalid statement - no equality token");
             }
 
-            Expression left = ParseExpression(tokens.GetRange(0, equalityIndex));
-            Expression right = ParseExpression(tokens.GetRange(equalityIndex + 1, tokens.Count - equalityIndex - 1));
+            Expression left = ParseAddition(tokens.GetRange(0, equalityIndex), 0, out int leftLen);
+            Expression right = ParseAddition(tokens, equalityIndex + 1, out int rightLen);
+
+            if (leftLen + 1 + rightLen != tokens.Count)
+            {
+                throw new Exception($"Unable to parse statement beginning at index {tokens[0].Index}");
+            }
 
             return new Statement(left, right);
         }
 
-        private static Expression ParseExpression(List<Token> tokens)
+        private static Expression ParseAddition(List<Token> tokens, int start, out int length)
         {
-            if (tokens.Count == 0)
-            {
-                throw new Exception("Unable to parse expression from zero tokens");
-            }
-
-            if (tokens.Count == 1)
-            {
-                if (tokens[0] is IntegerToken integer)
-                {
-                    return new ConstantExpression(integer.IntegerValue);
-                }
-                else if (tokens[0] is SymbolToken symbol)
-                {
-                    return new VariableExpression(symbol.StringValue);
-                }
-
-                throw new Exception("Invalid single-token expression");
-            }
-
-            List<Expression> expressions = new List<Expression>();
-            List<Operation> operations = new List<Operation>();
-
             List<Expression> parts = new List<Expression>();
-            bool isNegated = false;
 
-            for (int i = 0; i < tokens.Count; i++)
+            Expression firstPart = ParseMultiplication(tokens, start, out int firstLen);
+            parts.Add(firstPart);
+
+            int end = start + firstLen;
+
+            while (end < tokens.Count && tokens[end] is SpecialToken special && (special.Addition || special.Subtraction))
             {
-                if (IsOperationToken(tokens[i], out Operation op))
+                Expression nextPart = ParseMultiplication(tokens, end + 1, out int nextLen);
+                parts.Add(special.Subtraction ? NegatedExpression.Build(nextPart) : nextPart);
+                end += 1 + nextLen;
+            }
+
+            length = end - start;
+            return AdditionExpression.Build(parts);
+        }
+
+        private static Expression ParseMultiplication(List<Token> tokens, int start, out int length)
+        {
+            List<Expression> parts = new List<Expression>();
+
+            Expression firstPart = ParseExponent(tokens, start, out int firstLen);
+            parts.Add(firstPart);
+
+            int end = start + firstLen;
+
+            while (end < tokens.Count)
+            {
+                if (tokens[end] is SpecialToken special && special.Multiplication)
                 {
-                    if (parts.Count == 0 && op == Operation.Subtraction)
-                    {
-                        isNegated = !isNegated;
-                    }
-                    else
-                    {
-                        Expression partsMultiplication = MultiplicationExpression.Build(parts);
-                        expressions.Add(isNegated ? NegatedExpression.Build(partsMultiplication) : partsMultiplication);
-
-                        parts.Clear();
-                        isNegated = false;
-
-                        operations.Add(op);
-                    }
+                    Expression nextPart = ParseExponent(tokens, end + 1, out int nextLen);
+                    parts.Add(nextPart);
+                    end += 1 + nextLen;
                 }
-                else if (tokens[i] is SpecialToken iSpecial && iSpecial.LeftParenthesis)
+                else if (tokens[end] is SymbolToken || tokens[end] is IntegerToken)
                 {
-                    int depth = 1;
-
-                    for (int j = i + 1; j < tokens.Count; j++)
-                    {
-                        if (tokens[j] is SpecialToken jSpecial)
-                        {
-                            if (jSpecial.LeftParenthesis)
-                            {
-                                depth++;
-                            }
-                            else if (jSpecial.RightParenthesis && --depth == 0)
-                            {
-                                parts.Add(ParseExpression(tokens.GetRange(i + 1, j - i - 1)));
-                                i += j - i;
-                                break;
-                            }
-                        }
-                    }
-
-                    if (depth != 0)
-                    {
-                        throw new Exception("Unexpected end of parenthesis expression");
-                    }
+                    Expression nextPart = ParseExponent(tokens, end, out int nextLen);
+                    parts.Add(nextPart);
+                    end += nextLen;
                 }
                 else
                 {
-                    parts.Add(ParseExpression(tokens.GetRange(i, 1)));
+                    break;
                 }
             }
 
-            Expression finalPartsMultiplication = MultiplicationExpression.Build(parts);
-            expressions.Add(isNegated ? NegatedExpression.Build(finalPartsMultiplication) : finalPartsMultiplication);
-            return OperationExpression.Build(expressions, operations);
+            length = end - start;
+            return MultiplicationExpression.Build(parts);
+        }
+
+        private static Expression ParseExponent(List<Token> tokens, int start, out int length)
+        {
+            Expression baseValue = ParseExpression(tokens, start, out int baseLen);
+
+            if (start + baseLen < tokens.Count && tokens[start + baseLen] is SpecialToken special && special.Power)
+            {
+                Expression exponent = ParseExponent(tokens, start + baseLen + 1, out int exponentLen);
+                length = baseLen + 1 + exponentLen;
+                return ExponentExpression.Build(baseValue, exponent);
+            }
+            else
+            {
+                length = baseLen;
+                return baseValue;
+            }
+        }
+
+        private static Expression ParseExpression(List<Token> tokens, int start, out int length)
+        {
+            Token first = tokens[start];
+
+            if (first is IntegerToken integer)
+            {
+                length = 1;
+                return new ConstantExpression(integer.IntegerValue);
+            }
+            else if (first is SymbolToken symbol)
+            {
+                length = 1;
+                return new VariableExpression(symbol.StringValue);
+            }
+            else if (first is SpecialToken firstSpecial)
+            {
+                if (firstSpecial.Subtraction)
+                {
+                    Expression expr = ParseExpression(tokens, start + 1, out int exprLen);
+                    length = exprLen + 1;
+                    return NegatedExpression.Build(expr);
+                }
+                else if (firstSpecial.LeftParenthesis)
+                {
+                    Expression expr = ParseAddition(tokens, start + 1, out int exprLen);
+
+                    if (!(tokens[start + 1 + exprLen] is SpecialToken endSpecial && endSpecial.RightParenthesis))
+                    {
+                        throw new Exception($"Unexpected end of parenthesis expression");
+                    }
+
+                    length = exprLen + 2;
+                    return expr;
+                }
+            }
+
+            throw new Exception($"Unexpected token \"{tokens[start].StringValue}\" at index {tokens[start].Index}");
         }
 
         private static bool IsOperationToken(Token token, out Operation op)
