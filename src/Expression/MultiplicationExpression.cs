@@ -66,6 +66,6 @@ namespace Rubidium
             Build(Coefficient, VariableParts.Select(x => x.SubstituteVariables(variableValues)));
 
         public override string ToString() =>
-            $"( {Coefficient} * {string.Join(" * ", VariableParts.Select(x => x.ToString()))} )";
+            "( " + (Coefficient == Fraction.One ? string.Empty : $"{Coefficient} * ") + string.Join(" * ", VariableParts.Select(x => x.ToString())) + " )";
     }
 }
