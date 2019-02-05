@@ -17,7 +17,7 @@ namespace Rubidium
             Left = left;
             Right = right;
 
-            Variables = new Expression[] { left, right }.SelectMany(x => x.Variables).Distinct();
+            Variables = new Expression[] { left, right }.GetVariables();
             ContainsVariables = Variables.Count() > 0;
         }
 
