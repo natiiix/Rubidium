@@ -21,7 +21,7 @@ namespace Rubidium
         public override IEnumerable<string> Variables { get; }
         public override bool ContainsVariables { get; }
 
-        private OperationExpression(List<Expression> expressions, List<Operation> operations)
+        protected OperationExpression(List<Expression> expressions, List<Operation> operations)
         {
             Expressions = expressions;
             Operations = operations;
@@ -29,6 +29,10 @@ namespace Rubidium
             Variables = Expressions.SelectMany(x => x.Variables).Distinct();
             ContainsVariables = Variables.Count() > 0;
         }
+
+        protected OperationExpression(List<Expression> expressions, Operation op) :
+            this(expressions, GenerateOperations(op, expressions.Count - 1))
+        { }
 
         public override Expression SubstituteVariables(Dictionary<string, Fraction> variableValues)
         {
@@ -116,6 +120,15 @@ namespace Rubidium
                 return expressions[0];
             }
 
+            if (operations.All(x => x == Operation.Addition))
+            {
+                return new AdditionExpression(expressions);
+            }
+            else if (operations.All(x => x == Operation.Multiplication))
+            {
+                return new MultiplicationExpression(expressions);
+            }
+
             return new OperationExpression(expressions, operations);
         }
 
@@ -156,14 +169,7 @@ namespace Rubidium
                 newExpressions.Add(new LiteralExpression(coefficient));
             }
 
-            List<Operation> operations = new List<Operation>();
-
-            for (int i = 0; i < newExpressions.Count - 1; i++)
-            {
-                operations.Add(Operation.Multiplication);
-            }
-
-            return new OperationExpression(newExpressions, operations);
+            return new MultiplicationExpression(newExpressions);
         }
 
         public static Expression Subtract(Expression first, Expression second)
@@ -173,10 +179,10 @@ namespace Rubidium
                 return new LiteralExpression(firstLiteral.Value - secondLiteral.Value);
             }
 
-            return new OperationExpression(new List<Expression>() { first, second }, GenerateOperations(Operation.Subtraction, 1));
+            return new OperationExpression(new List<Expression>() { first, second }, Operation.Subtraction);
         }
 
-        protected static List<Operation> GenerateOperations(Operation op, int count)
+        private static List<Operation> GenerateOperations(Operation op, int count)
         {
             List<Operation> operations = new List<Operation>(count);
 
