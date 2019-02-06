@@ -18,6 +18,7 @@ namespace Rubidium
         public bool Positive => Numerator.Sign > 0;
         public bool Negative => Numerator.Sign < 0;
         public Fraction AbsoluteValue => Positive ? this : -this;
+        public Fraction Square => new Fraction(Numerator * Numerator, Denominator * Denominator);
         public Fraction SquareRoot => (Fraction)Math.Sqrt((double)this);
 
         public Fraction(BigInteger numerator, BigInteger denominator)
