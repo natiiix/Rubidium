@@ -7,11 +7,24 @@
             "type": "process",
             "args": [
                 "build",
-                "${workspaceFolder}/Rubidium.csproj"
+                "${workspaceFolder}/Rubidium/Rubidium.csproj"
             ],
             "problemMatcher": "$msCompile",
             "group": {
                 "kind": "build",
+                "isDefault": true
+            }
+        },
+        {
+            "label": "test",
+            "command": "dotnet",
+            "type": "process",
+            "args": [
+                "test"
+            ],
+            "problemMatcher": "$msCompile",
+            "group": {
+                "kind": "test",
                 "isDefault": true
             }
         }
