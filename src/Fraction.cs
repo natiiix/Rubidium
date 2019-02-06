@@ -15,7 +15,9 @@ namespace Rubidium
         public BigInteger Denominator { get; private set; }
 
         public bool IsZero => Numerator.IsZero;
-        public Fraction AbsoluteValue => Numerator.Sign < 0 ? -this : this;
+        public bool Positive => Numerator.Sign > 0;
+        public bool Negative => Numerator.Sign < 0;
+        public Fraction AbsoluteValue => Positive ? this : -this;
         public Fraction SquareRoot => (Fraction)Math.Sqrt((double)this);
 
         public Fraction(BigInteger numerator, BigInteger denominator)
