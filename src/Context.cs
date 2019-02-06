@@ -28,7 +28,6 @@ namespace Rubidium
             int newVariablesValues = 0;
             List<Statement> keepStatements = new List<Statement>();
             List<Statement> newStatements = new List<Statement>();
-            Dictionary<string, Expression> newVarExpressions = new Dictionary<string, Expression>();
 
             foreach (Statement s in Statements)
             {
@@ -37,8 +36,7 @@ namespace Rubidium
                     newStatements.Add(s.SubstituteVariables(VariableValues));
                 }
                 else if (s.Left is VariableExpression leftVariable &&
-                    FreeVariables.Contains(leftVariable.Name) &&
-                    !newVarExpressions.ContainsKey(leftVariable.Name))
+                    FreeVariables.Contains(leftVariable.Name))
                 {
                     VariableExpressions[leftVariable.Name] = s.Right;
                 }
@@ -95,6 +93,8 @@ namespace Rubidium
                     keepStatements.Add(s);
                 }
             }
+
+            Dictionary<string, Expression> newVarExpressions = new Dictionary<string, Expression>();
 
             foreach (var varExpr in VariableExpressions)
             {
