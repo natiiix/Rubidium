@@ -17,6 +17,7 @@ namespace Rubidium
         public bool IsZero => Numerator.IsZero;
         public bool Positive => Numerator.Sign > 0;
         public bool Negative => Numerator.Sign < 0;
+        public bool IsWholeNumber => Denominator.IsOne;
         public Fraction AbsoluteValue => Positive ? this : -this;
         public Fraction Square => new Fraction(Numerator * Numerator, Denominator * Denominator);
         public Fraction SquareRoot => (Fraction)Math.Sqrt((double)this);
@@ -100,7 +101,7 @@ namespace Rubidium
 
         public override int GetHashCode() => Numerator.GetHashCode() ^ Denominator.GetHashCode();
 
-        public override string ToString() => Denominator.IsOne ? Numerator.ToString() : $"({Numerator}/{Denominator})";
+        public override string ToString() => IsWholeNumber ? Numerator.ToString() : $"({Numerator}/{Denominator})";
 
         public static implicit operator Fraction(BigInteger b) => new Fraction(b);
 
@@ -127,7 +128,7 @@ namespace Rubidium
 
         public static Fraction operator ^(Fraction value, Fraction exponent)
         {
-            if (exponent.Denominator.IsOne && exponent.Numerator >= int.MinValue && exponent.Numerator <= int.MaxValue)
+            if (exponent.IsWholeNumber && exponent.Numerator >= int.MinValue && exponent.Numerator <= int.MaxValue)
             {
                 int exp = (int)exponent.Numerator;
 
