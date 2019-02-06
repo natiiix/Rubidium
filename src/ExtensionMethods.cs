@@ -5,7 +5,7 @@ namespace Rubidium
 {
     public static class ExtensionMethods
     {
-        public static IEnumerable<string> GetVariables(this IEnumerable<Expression> expressions) =>
-            expressions.SelectMany(x => x.Variables).Distinct();
+        internal static IEnumerable<string> GetVariables(this IEnumerable<ICanContainVariables> objects) =>
+            objects.SelectMany(x => x.Variables).Distinct();
     }
 }
