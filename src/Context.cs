@@ -6,12 +6,18 @@ namespace Rubidium
 {
     public class Context
     {
+        private IEnumerable<string> Variables { get; }
+
         private List<Statement> Statements { get; }
         private Dictionary<string, Expression> VariableExpressions { get; }
         private Dictionary<string, Fraction> VariableValues { get; }
 
+        private IEnumerable<string> FreeVariables => Variables.Where(x => !VariableExpressions.ContainsKey(x) && !VariableValues.ContainsKey(x));
+
         public Context(List<Statement> initialStatements)
         {
+            Variables = initialStatements.GetVariables();
+
             Statements = new List<Statement>(initialStatements);
             VariableExpressions = new Dictionary<string, Expression>();
             VariableValues = new Dictionary<string, Fraction>();
@@ -31,8 +37,7 @@ namespace Rubidium
                     newStatements.Add(s.SubstituteVariables(VariableValues));
                 }
                 else if (s.Left is VariableExpression leftVariable &&
-                    !VariableExpressions.ContainsKey(leftVariable.Name) &&
-                    !VariableValues.ContainsKey(leftVariable.Name) &&
+                    FreeVariables.Contains(leftVariable.Name) &&
                     !newVarExpressions.ContainsKey(leftVariable.Name))
                 {
                     VariableExpressions[leftVariable.Name] = s.Right;
