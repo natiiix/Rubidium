@@ -7,44 +7,35 @@ namespace Rubidium
     public class Context
     {
         private List<Statement> Statements { get; }
+        private Dictionary<string, Expression> VariableExpressions { get; }
         private Dictionary<string, Fraction> VariableValues { get; }
 
         public Context(List<Statement> initialStatements)
         {
             Statements = new List<Statement>(initialStatements);
+            VariableExpressions = new Dictionary<string, Expression>();
             VariableValues = new Dictionary<string, Fraction>();
         }
 
         public bool FindNewStatements()
         {
-            int newVariablesBound = 0;
+            int newVariablesValues = 0;
             List<Statement> keepStatements = new List<Statement>();
             List<Statement> newStatements = new List<Statement>();
+            Dictionary<string, Expression> newVarExpressions = new Dictionary<string, Expression>();
 
             foreach (Statement s in Statements)
             {
-                Console.WriteLine(s);
-
                 if (s.Variables.Any(x => VariableValues.ContainsKey(x)))
                 {
                     newStatements.Add(s.SubstituteVariables(VariableValues));
                 }
-                else if (s.Left is VariableExpression leftVariable)
+                else if (s.Left is VariableExpression leftVariable &&
+                    !VariableExpressions.ContainsKey(leftVariable.Name) &&
+                    !VariableValues.ContainsKey(leftVariable.Name) &&
+                    !newVarExpressions.ContainsKey(leftVariable.Name))
                 {
-                    if (s.Right is ConstantExpression rightConst)
-                    {
-                        if (VariableValues.ContainsKey(leftVariable.Name))
-                        {
-                            throw new Exception("Variable is already bound to a value");
-                        }
-
-                        VariableValues[leftVariable.Name] = rightConst;
-                        newVariablesBound++;
-                    }
-                    else
-                    {
-                        keepStatements.Add(s);
-                    }
+                    VariableExpressions[leftVariable.Name] = s.Right;
                 }
                 else if (s.Right is VariableExpression rightVariable)
                 {
@@ -100,34 +91,85 @@ namespace Rubidium
                 }
             }
 
-            Console.WriteLine("--------------------------------");
+            foreach (var varExpr in VariableExpressions)
+            {
+                if (varExpr.Value is ConstantExpression constant)
+                {
+                    VariableValues[varExpr.Key] = constant.Value;
+                    newVariablesValues++;
+                }
+                else
+                {
+                    Expression newExpr = varExpr.Value.SubstituteVariables(VariableValues);
+
+                    if (newExpr is ConstantExpression newConstant)
+                    {
+                        VariableValues[varExpr.Key] = newConstant.Value;
+                        newVariablesValues++;
+                    }
+                    else
+                    {
+                        newVarExpressions[varExpr.Key] = newExpr;
+                    }
+                }
+            }
 
             Statements.Clear();
             Statements.AddRange(keepStatements);
             Statements.AddRange(newStatements);
 
-            return (newStatements.Count > 0 || (newVariablesBound > 0 && keepStatements.Count > 0));
+            VariableExpressions.Clear();
+
+            if (newStatements.Count > 0 || newVarExpressions.Count > 0)
+            {
+                foreach (Statement s in newStatements)
+                {
+                    Console.WriteLine(s);
+                }
+
+                foreach (var varExpr in newVarExpressions)
+                {
+                    VariableExpressions[varExpr.Key] = varExpr.Value;
+                    Console.WriteLine($"{varExpr.Key} = {varExpr.Value}");
+                }
+
+                Console.WriteLine("--------------------------------");
+            }
+
+            return (newStatements.Count > 0 || (newVariablesValues > 0 && (keepStatements.Count > 0 || newVarExpressions.Count > 0)));
         }
 
         public override string ToString()
         {
+            const string LEFT_PADDING = "  ";
             string str = string.Empty;
 
             if (Statements.Count > 0)
             {
                 str += "Statements:" + Environment.NewLine +
-                    string.Join(Environment.NewLine, Statements);
+                    string.Join(Environment.NewLine, Statements.Select(x => $"{LEFT_PADDING}{x}"));
+            }
+
+            if (VariableExpressions.Count > 0)
+            {
+                if (!string.IsNullOrEmpty(str))
+                {
+                    str += Environment.NewLine + Environment.NewLine;
+                }
+
+                str += "Variable expresisons:" + Environment.NewLine +
+                    string.Join(Environment.NewLine, VariableExpressions.Select(x => $"{LEFT_PADDING}{x.Key} = {x.Value}"));
             }
 
             if (VariableValues.Count > 0)
             {
                 if (!string.IsNullOrEmpty(str))
                 {
-                    str += Environment.NewLine;
+                    str += Environment.NewLine + Environment.NewLine;
                 }
 
-                str += "Variables:" + Environment.NewLine +
-                    string.Join(Environment.NewLine, VariableValues.Select(x => $"{x.Key} = {x.Value}" + (x.Value.Denominator == Fraction.One ? string.Empty : $" = {(double)x.Value:g}")));
+                str += "Variable values:" + Environment.NewLine +
+                    string.Join(Environment.NewLine, VariableValues.Select(x => $"{LEFT_PADDING}{x.Key} = {x.Value}" + (x.Value.Denominator == Fraction.One ? string.Empty : $" = {(double)x.Value:g}")));
             }
 
             return str;
