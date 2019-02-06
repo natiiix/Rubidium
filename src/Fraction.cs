@@ -100,7 +100,7 @@ namespace Rubidium
 
         public override int GetHashCode() => Numerator.GetHashCode() ^ Denominator.GetHashCode();
 
-        public override string ToString() => Denominator == 1 ? Numerator.ToString() : $"({Numerator}/{Denominator})";
+        public override string ToString() => Denominator.IsOne ? Numerator.ToString() : $"({Numerator}/{Denominator})";
 
         public static implicit operator Fraction(BigInteger b) => new Fraction(b);
 
@@ -127,14 +127,26 @@ namespace Rubidium
 
         public static Fraction operator ^(Fraction value, Fraction exponent)
         {
-            if (exponent.Denominator == 1 && exponent.Numerator >= 0 && exponent.Numerator <= int.MaxValue)
+            if (exponent.Denominator.IsOne && exponent.Numerator >= int.MinValue && exponent.Numerator <= int.MaxValue)
             {
                 int exp = (int)exponent.Numerator;
-                return new Fraction(BigInteger.Pow(value.Numerator, exp), BigInteger.Pow(value.Denominator, exp));
+
+                if (exp > 0)
+                {
+                    return new Fraction(BigInteger.Pow(value.Numerator, exp), BigInteger.Pow(value.Denominator, exp));
+                }
+                else if (exp < 0)
+                {
+                    return new Fraction(BigInteger.Pow(value.Denominator, -exp), BigInteger.Pow(value.Numerator, -exp));
+                }
+                else
+                {
+                    return Fraction.One;
+                }
             }
             else
             {
-                // throw new NotImplementedException($"Exponent must be an integer within the range 0 - {int.MaxValue}");
+                // throw new NotImplementedException($"Exponent must be an integer within the range {int.MinValue} - {int.MaxValue}");
 
                 double result = Math.Pow((double)value, (double)exponent);
                 return (Fraction)result;
