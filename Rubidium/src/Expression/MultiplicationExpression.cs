@@ -10,6 +10,7 @@ namespace Rubidium
         public List<Expression> VariableParts { get; }
 
         public bool IsVariableWithCoefficient => VariableParts.Count == 1 && VariableParts[0] is VariableExpression;
+        public string VariableName => IsVariableWithCoefficient ? (VariableParts[0] as VariableExpression).Name : null;
 
         public override IEnumerable<string> Variables { get; }
 
