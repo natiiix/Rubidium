@@ -19,11 +19,11 @@ namespace Rubidium.Tests
             Assert.Equal(Fraction.Zero, (Fraction)0);
             Assert.Equal(Fraction.Zero, (Fraction)0d);
 
-            for (int i = 1; i < SIZE_LIMIT; i *= 2)
+            ForEachZero(x =>
             {
-                Assert.Equal(Fraction.Zero, new Fraction(0, i));
-                Assert.Equal(Fraction.Zero, new Fraction(0, -i));
-            }
+                Assert.Equal(Fraction.Zero, x);
+                Assert.Equal(Fraction.Zero, x);
+            });
         }
 
         [Fact]
