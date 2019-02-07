@@ -189,5 +189,43 @@ namespace Rubidium.Tests
                 }
             }
         }
+
+        private static void ForEachPositive(Action<Fraction> callback)
+        {
+            for (int i = 1; i < SIZE_LIMIT; i *= 2)
+            {
+                for (int j = 1; j < SIZE_LIMIT; j *= 2)
+                {
+                    callback(new Fraction(i, j));
+                }
+            }
+
+            for (int i = -1; i > -SIZE_LIMIT; i *= 2)
+            {
+                for (int j = -1; j > -SIZE_LIMIT; j *= 2)
+                {
+                    callback(new Fraction(i, j));
+                }
+            }
+        }
+
+        private static void ForEachNegative(Action<Fraction> callback)
+        {
+            for (int i = -1; i > -SIZE_LIMIT; i *= 2)
+            {
+                for (int j = 1; j < SIZE_LIMIT; j *= 2)
+                {
+                    callback(new Fraction(i, j));
+                }
+            }
+
+            for (int i = 1; i < SIZE_LIMIT; i *= 2)
+            {
+                for (int j = -1; j > -SIZE_LIMIT; j *= 2)
+                {
+                    callback(new Fraction(i, j));
+                }
+            }
+        }
     }
 }
