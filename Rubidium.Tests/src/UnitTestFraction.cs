@@ -122,6 +122,26 @@ namespace Rubidium.Tests
             });
         }
 
+        [Fact]
+        public static void TestInvert()
+        {
+            ForEachPositive(x =>
+            {
+                Fraction inverted = ~x;
+
+                Assert.Equal(x.Numerator, inverted.Denominator);
+                Assert.Equal(x.Denominator, inverted.Numerator);
+            });
+
+            ForEachNegative(x =>
+            {
+                Fraction inverted = ~x;
+
+                Assert.Equal(-x.Numerator, inverted.Denominator);
+                Assert.Equal(-x.Denominator, inverted.Numerator);
+            });
+        }
+
         private static void ForEachZero(Action<Fraction> callback)
         {
             for (int i = 1; i < SIZE_LIMIT; i *= 2)
