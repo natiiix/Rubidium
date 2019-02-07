@@ -169,11 +169,16 @@ namespace Rubidium.Tests
             }
         }
 
+        private static void ForEachNonZero(Action<Fraction> callback)
+        {
+            ForEachPositive(callback);
+            ForEachNegative(callback);
+        }
+
         private static void ForEachFraction(Action<Fraction> callback)
         {
             ForEachZero(callback);
-            ForEachPositive(callback);
-            ForEachNegative(callback);
+            ForEachNonZero(callback);
         }
     }
 }
