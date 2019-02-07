@@ -19,8 +19,5 @@ namespace Rubidium
         public override Expression SubstituteVariables(Dictionary<string, Fraction> variableValues, Dictionary<string, Expression> variableExpressions) => this;
 
         public override string ToString() => Value.ToString();
-
-        public static implicit operator ConstantExpression(Fraction f) => new ConstantExpression(f);
-        public static implicit operator Fraction(ConstantExpression c) => c.Value;
     }
 }
