@@ -166,7 +166,7 @@ namespace Rubidium
                 foreach (var varExpr in newVarExpressions)
                 {
                     VariableExpressions[varExpr.Key] = varExpr.Value;
-                    PrintIfVerbose($"{varExpr.Key} = {varExpr.Value}");
+                    PrintIfVerbose($"{varExpr.Key} = " + varExpr.Value.ToString().StripParentheses());
                 }
 
                 PrintIfVerbose("--------------------------------");
@@ -212,7 +212,7 @@ namespace Rubidium
                 }
 
                 str += "Variable expresisons:" + Environment.NewLine +
-                    string.Join(Environment.NewLine, VariableExpressions.Select(x => $"{LEFT_PADDING}{x.Key} = {x.Value}"));
+                    string.Join(Environment.NewLine, VariableExpressions.Select(x => $"{LEFT_PADDING}{x.Key} = " + x.Value.ToString().StripParentheses()));
             }
 
             if (VariableValues.Count > 0)
@@ -223,7 +223,7 @@ namespace Rubidium
                 }
 
                 str += "Variable values:" + Environment.NewLine +
-                    string.Join(Environment.NewLine, VariableValues.Select(x => $"{LEFT_PADDING}{x.Key} = {x.Value}" + (x.Value.Denominator == Fraction.One ? string.Empty : $" = {(double)x.Value:g}")));
+                    string.Join(Environment.NewLine, VariableValues.Select(x => $"{LEFT_PADDING}{x.Key} = " + x.Value.ToString().StripParentheses() + (x.Value.Denominator == Fraction.One ? string.Empty : $" = {(double)x.Value:g}")));
             }
 
             return str;

@@ -22,7 +22,7 @@ namespace Rubidium
             ContainsVariables = Variables.Count() > 0;
         }
 
-        public override string ToString() => $"{Left} = {Right}";
+        public override string ToString() => Left.ToString().StripParentheses() + " = " + Right.ToString().StripParentheses();
 
         public Statement SubstituteVariables(Dictionary<string, Fraction> variableValues, Dictionary<string, Expression> variableExpressions) =>
             new Statement(Left.SubstituteVariables(variableValues, variableExpressions), Right.SubstituteVariables(variableValues, variableExpressions));
