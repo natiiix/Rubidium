@@ -4,7 +4,7 @@ using Rubidium;
 
 namespace Rubidium.Tests
 {
-    public static class UnitTestFraction
+    public static class FractionTests
     {
         private const int SIZE_LIMIT = 1000000;
 
