@@ -34,6 +34,8 @@ namespace Rubidium
             List<Statement> statements = Parser.ParseStatements(tokens);
             Context context = new Context(statements);
 
+            Console.WriteLine($"Initial {context}{Environment.NewLine}");
+
             while (context.FindNewStatements()) ;
 
             Console.WriteLine(context);
