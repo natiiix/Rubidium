@@ -30,6 +30,7 @@ namespace Rubidium
             int newVariablesValues = 0;
             List<Statement> keepStatements = new List<Statement>();
             List<Statement> newStatements = new List<Statement>();
+            List<string> expressedVariables = new List<string>();
 
             foreach (Statement s in Statements)
             {
@@ -57,7 +58,7 @@ namespace Rubidium
                     VariableExpressions[leftMultiplication.VariableName] = s.Right / new ConstantExpression(leftMultiplication.Coefficient);
                 }
                 else if (s.Left is AdditionExpression leftAddition &&
-                    (s.Right is AdditionExpression || !leftAddition.Constant.IsZero || leftAddition.VariableParts.Any(IsUsableVariable)))
+                    (s.Right is AdditionExpression || !leftAddition.Constant.IsZero || leftAddition.VariableParts.Any(x => IsUsableVariable(x, expressedVariables))))
                 {
                     if (s.Right is AdditionExpression rightAddition)
                     {
@@ -81,12 +82,17 @@ namespace Rubidium
                     }
                     else
                     {
-                        Expression usableVar = leftAddition.VariableParts.Find(IsUsableVariable);
+                        Expression usableVar = leftAddition.VariableParts.Find(x => IsUsableVariable(x, expressedVariables));
 
                         newStatements.Add(new Statement(
                             usableVar,
                             s.Right - AdditionExpression.Build(leftAddition.Constant, leftAddition.VariableParts.Where(x => x != usableVar))
                         ));
+
+                        expressedVariables.Add(usableVar is VariableExpression varExpr ?
+                            varExpr.Name :
+                            (usableVar as MultiplicationExpression).VariableName
+                        );
                     }
                 }
                 else if (s.Right.ContainsVariables)
@@ -152,9 +158,10 @@ namespace Rubidium
             return (newStatements.Count > 0 || (newVariablesValues > 0 && (keepStatements.Count > 0 || newVarExpressions.Count > 0)));
         }
 
-        private bool IsUsableVariable(Expression expr) =>
-            (expr is VariableExpression varExpr && FreeVariables.Contains(varExpr.Name)) ||
-            expr is MultiplicationExpression multiExpr && multiExpr.IsVariableWithCoefficient && FreeVariables.Contains(multiExpr.VariableName);
+        private bool IsUsableVariable(Expression expr, List<string> expressedVariables) =>
+            (expr is VariableExpression varExpr && FreeVariables.Contains(varExpr.Name) && !expressedVariables.Contains(varExpr.Name)) ||
+            (expr is MultiplicationExpression multiExpr && multiExpr.IsVariableWithCoefficient &&
+                FreeVariables.Contains(multiExpr.VariableName) && !expressedVariables.Contains(multiExpr.VariableName));
 
         private void PrintIfVerbose(string str)
         {
