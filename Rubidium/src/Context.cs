@@ -42,7 +42,7 @@ namespace Rubidium
                     }
                     else
                     {
-                        PrintIfVerbose($"{s} : {(s.Left - s.Right) is ConstantExpression constant && constant.Value == 0}");
+                        PrintIfVerbose($"{s} : {(s.Left - s.Right) is ConstantExpression constant && constant.Value.IsZero}");
                     }
                 }
                 else if (s.Variables.Any(x => VariableValues.ContainsKey(x) || VariableExpressions.ContainsKey(x)))
@@ -146,7 +146,7 @@ namespace Rubidium
             {
                 if (varExpr.Value is ConstantExpression constant)
                 {
-                    VariableValues[varExpr.Key] = constant.Value;
+                    VariableValues[varExpr.Key] = constant;
                     newVariablesValues++;
                 }
                 else
@@ -155,7 +155,7 @@ namespace Rubidium
 
                     if (newExpr is ConstantExpression newConstant)
                     {
-                        VariableValues[varExpr.Key] = newConstant.Value;
+                        VariableValues[varExpr.Key] = newConstant;
                         newVariablesValues++;
                     }
                     else

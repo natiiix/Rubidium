@@ -22,7 +22,7 @@ namespace Rubidium
         {
             if (denominator is ConstantExpression denomConst)
             {
-                return denomConst.Value == Fraction.One ? numerator : numerator * ~denomConst.Value;
+                return denomConst == Fraction.One ? numerator : numerator * ~denomConst.Value;
             }
             else if (numerator is FractionExpression numerFract)
             {

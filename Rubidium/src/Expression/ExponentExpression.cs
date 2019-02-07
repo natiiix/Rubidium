@@ -21,7 +21,7 @@ namespace Rubidium
         {
             if (baseValue is ConstantExpression baseConst && exponent is ConstantExpression exponentConst)
             {
-                return baseConst.Value ^ exponentConst.Value;
+                return baseConst.Value ^ exponentConst;
             }
             else
             {
