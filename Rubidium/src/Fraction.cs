@@ -108,8 +108,11 @@ namespace Rubidium
         public static implicit operator Fraction(int i) => new Fraction(i);
 
         public static explicit operator Fraction(double d) => FromDouble(d);
+        public static implicit operator Fraction(ConstantExpression c) => c.Value;
 
         public static explicit operator double(Fraction f) => (double)f.Numerator / (double)f.Denominator;
+
+        public static implicit operator ConstantExpression(Fraction f) => new ConstantExpression(f);
 
         public static Fraction operator -(Fraction f) => new Fraction(-f.Numerator, f.Denominator);
 

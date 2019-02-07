@@ -6,6 +6,7 @@ namespace Rubidium
 {
     public class Context
     {
+        private bool Verbose { get; }
         private IEnumerable<string> Variables { get; }
 
         private List<Statement> Statements { get; }
@@ -14,8 +15,9 @@ namespace Rubidium
 
         private IEnumerable<string> FreeVariables => Variables.Where(x => !VariableExpressions.ContainsKey(x) && !VariableValues.ContainsKey(x));
 
-        public Context(List<Statement> initialStatements)
+        public Context(List<Statement> initialStatements, bool verbose = true)
         {
+            Verbose = verbose;
             Variables = initialStatements.GetVariables();
 
             Statements = new List<Statement>(initialStatements);
@@ -28,33 +30,42 @@ namespace Rubidium
             int newVariablesValues = 0;
             List<Statement> keepStatements = new List<Statement>();
             List<Statement> newStatements = new List<Statement>();
+            List<string> expressedVariables = new List<string>();
 
             foreach (Statement s in Statements)
             {
-                if (s.Variables.Any(x => VariableValues.ContainsKey(x)))
+                if (!s.Left.ContainsVariables)
                 {
-                    newStatements.Add(s.SubstituteVariables(VariableValues));
+                    if (s.Right.ContainsVariables)
+                    {
+                        newStatements.Add(s.SwappedSides);
+                    }
+                    else
+                    {
+                        PrintIfVerbose($"{s} : {(s.Left - s.Right) is ConstantExpression constant && constant.Value.IsZero}");
+                    }
+                }
+                else if (s.Variables.Any(x => VariableValues.ContainsKey(x) || VariableExpressions.ContainsKey(x)))
+                {
+                    newStatements.Add(s.SubstituteVariables(VariableValues, VariableExpressions));
                 }
                 else if (s.Left is VariableExpression leftVariable &&
-                    FreeVariables.Contains(leftVariable.Name))
+                    IsVariableExpression(s.Right, leftVariable.Name))
                 {
                     VariableExpressions[leftVariable.Name] = s.Right;
                 }
                 else if (s.Right is VariableExpression rightVariable)
                 {
-                    newStatements.Add(new Statement(s.Right, s.Left));
+                    newStatements.Add(s.SwappedSides);
                 }
                 else if (s.Left is MultiplicationExpression leftMultiplication &&
-                    leftMultiplication.VariableParts.Count == 1 &&
-                    leftMultiplication.VariableParts[0] is VariableExpression)
+                    leftMultiplication.IsVariableWithCoefficient &&
+                    IsVariableExpression(s.Right, leftMultiplication.VariableName))
                 {
-                    newStatements.Add(new Statement(
-                        leftMultiplication.VariableParts[0],
-                        s.Right / new ConstantExpression(leftMultiplication.Coefficient)
-                    ));
+                    VariableExpressions[leftMultiplication.VariableName] = s.Right / leftMultiplication.Coefficient;
                 }
                 else if (s.Left is AdditionExpression leftAddition &&
-                    (s.Right is AdditionExpression || !leftAddition.Constant.IsZero))
+                    (s.Right is AdditionExpression || !leftAddition.Constant.IsZero || leftAddition.VariableParts.Any(x => IsUsableVariable(x, expressedVariables))))
                 {
                     if (s.Right is AdditionExpression rightAddition)
                     {
@@ -66,27 +77,47 @@ namespace Rubidium
 
                         newStatements.Add(new Statement(
                             AdditionExpression.Build(variableParts),
-                            new ConstantExpression(constant)
+                            constant
+                        ));
+                    }
+                    else if (!leftAddition.Constant.IsZero)
+                    {
+                        newStatements.Add(new Statement(
+                            AdditionExpression.Build(leftAddition.VariableParts),
+                            s.Right - leftAddition.Constant
+                        ));
+                    }
+                    else
+                    {
+                        Expression usableVar = leftAddition.VariableParts.Find(x => IsUsableVariable(x, expressedVariables));
+
+                        newStatements.Add(new Statement(
+                            usableVar,
+                            s.Right - AdditionExpression.Build(leftAddition.Constant, leftAddition.VariableParts.Where(x => x != usableVar))
+                        ));
+
+                        expressedVariables.Add(usableVar is VariableExpression varExpr ?
+                            varExpr.Name :
+                            (usableVar as MultiplicationExpression).VariableName
+                        );
+                    }
+                }
+                else if (s.Right.ContainsVariables)
+                {
+                    if (s.Right is AdditionExpression rightAddition)
+                    {
+                        newStatements.Add(new Statement(
+                            s.Left - AdditionExpression.Build(rightAddition.VariableParts),
+                            rightAddition.Constant
                         ));
                     }
                     else
                     {
                         newStatements.Add(new Statement(
-                            AdditionExpression.Build(leftAddition.VariableParts),
-                            s.Right + new ConstantExpression(-leftAddition.Constant)
+                            s.Left - s.Right,
+                            ConstantExpression.Zero
                         ));
                     }
-                }
-                else if (s.Right.ContainsVariables)
-                {
-                    newStatements.Add(s.Left.ContainsVariables ?
-                        new Statement(s.Left - s.Right, ConstantExpression.Zero) :
-                        new Statement(s.Right, s.Left)
-                    );
-                }
-                else if (!s.Left.ContainsVariables && !s.Right.ContainsVariables)
-                {
-                    Console.WriteLine($"{s} : {(s.Left - s.Right) is ConstantExpression constant && constant.Value == 0}");
                 }
                 else
                 {
@@ -100,16 +131,16 @@ namespace Rubidium
             {
                 if (varExpr.Value is ConstantExpression constant)
                 {
-                    VariableValues[varExpr.Key] = constant.Value;
+                    VariableValues[varExpr.Key] = constant;
                     newVariablesValues++;
                 }
                 else
                 {
-                    Expression newExpr = varExpr.Value.SubstituteVariables(VariableValues);
+                    Expression newExpr = varExpr.Value.SubstituteVariables(VariableValues, VariableExpressions);
 
                     if (newExpr is ConstantExpression newConstant)
                     {
-                        VariableValues[varExpr.Key] = newConstant.Value;
+                        VariableValues[varExpr.Key] = newConstant;
                         newVariablesValues++;
                     }
                     else
@@ -129,20 +160,38 @@ namespace Rubidium
             {
                 foreach (Statement s in newStatements)
                 {
-                    Console.WriteLine(s);
+                    PrintIfVerbose(s);
                 }
 
                 foreach (var varExpr in newVarExpressions)
                 {
                     VariableExpressions[varExpr.Key] = varExpr.Value;
-                    Console.WriteLine($"{varExpr.Key} = {varExpr.Value}");
+                    PrintIfVerbose($"{varExpr.Key} = {varExpr.Value}");
                 }
 
-                Console.WriteLine("--------------------------------");
+                PrintIfVerbose("--------------------------------");
             }
 
             return (newStatements.Count > 0 || (newVariablesValues > 0 && (keepStatements.Count > 0 || newVarExpressions.Count > 0)));
         }
+
+        private bool IsUsableVariable(Expression expr, List<string> expressedVariables) =>
+            (expr is VariableExpression varExpr && FreeVariables.Contains(varExpr.Name) && !expressedVariables.Contains(varExpr.Name)) ||
+            (expr is MultiplicationExpression multiExpr && multiExpr.IsVariableWithCoefficient &&
+                FreeVariables.Contains(multiExpr.VariableName) && !expressedVariables.Contains(multiExpr.VariableName));
+
+        private bool IsVariableExpression(Expression rightExpr, string varName) =>
+            FreeVariables.Contains(varName) && !rightExpr.Variables.Contains(varName);
+
+        private void PrintIfVerbose(string str)
+        {
+            if (Verbose)
+            {
+                Console.WriteLine(str);
+            }
+        }
+
+        private void PrintIfVerbose(object obj) => PrintIfVerbose(obj.ToString());
 
         public override string ToString()
         {

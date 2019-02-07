@@ -10,6 +10,7 @@ namespace Rubidium
         public List<Expression> VariableParts { get; }
 
         public bool IsVariableWithCoefficient => VariableParts.Count == 1 && VariableParts[0] is VariableExpression;
+        public string VariableName => IsVariableWithCoefficient ? (VariableParts[0] as VariableExpression).Name : null;
 
         public override IEnumerable<string> Variables { get; }
 
@@ -25,7 +26,7 @@ namespace Rubidium
         {
             if (expressions.Count() == 0)
             {
-                return new ConstantExpression(baseCoefficient);
+                return baseCoefficient;
             }
 
             Fraction coefficient = baseCoefficient;
@@ -42,19 +43,35 @@ namespace Rubidium
                     coefficient *= multiplication.Coefficient;
                     variableParts.AddRange(multiplication.VariableParts);
                 }
+                else if (expr is NegatedExpression negation)
+                {
+                    coefficient = -coefficient;
+                    variableParts.Add(negation.Expression);
+                }
                 else
                 {
                     variableParts.Add(expr);
                 }
             }
 
-            if (coefficient.IsZero || variableParts.Count == 0)
+            if (variableParts.Count == 0 || coefficient.IsZero)
             {
-                return new ConstantExpression(coefficient);
+                return coefficient;
             }
-            else if (coefficient == Fraction.One && variableParts.Count == 1)
+            else if (variableParts.Count == 1)
             {
-                return variableParts[0];
+                if (coefficient == Fraction.One)
+                {
+                    return variableParts[0];
+                }
+                else if (coefficient == Fraction.NegativeOne)
+                {
+                    return -variableParts[0];
+                }
+                else if (variableParts[0] is AdditionExpression addition)
+                {
+                    return addition.Multiply(coefficient);
+                }
             }
 
             return new MultiplicationExpression(coefficient, variableParts);
@@ -64,8 +81,8 @@ namespace Rubidium
 
         public static Expression Build(params Expression[] expressions) => Build(expressions as IEnumerable<Expression>);
 
-        public override Expression SubstituteVariables(Dictionary<string, Fraction> variableValues) =>
-            Build(Coefficient, VariableParts.Select(x => x.SubstituteVariables(variableValues)));
+        public override Expression SubstituteVariables(Dictionary<string, Fraction> variableValues, Dictionary<string, Expression> variableExpressions) =>
+            Build(Coefficient, VariableParts.Select(x => x.SubstituteVariables(variableValues, variableExpressions)));
 
         public override string ToString() =>
             IsVariableWithCoefficient ?

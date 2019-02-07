@@ -21,7 +21,7 @@ namespace Rubidium
         {
             if (baseValue is ConstantExpression baseConst && exponent is ConstantExpression exponentConst)
             {
-                return new ConstantExpression(baseConst.Value ^ exponentConst.Value);
+                return baseConst.Value ^ exponentConst;
             }
             else
             {
@@ -29,8 +29,8 @@ namespace Rubidium
             }
         }
 
-        public override Expression SubstituteVariables(Dictionary<string, Fraction> variableValues) =>
-            Build(BaseValue.SubstituteVariables(variableValues), Exponent.SubstituteVariables(variableValues));
+        public override Expression SubstituteVariables(Dictionary<string, Fraction> variableValues, Dictionary<string, Expression> variableExpressions) =>
+            Build(BaseValue.SubstituteVariables(variableValues, variableExpressions), Exponent.SubstituteVariables(variableValues, variableExpressions));
 
         public override string ToString() => $"({BaseValue}^{Exponent})";
     }

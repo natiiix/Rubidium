@@ -4,8 +4,8 @@ namespace Rubidium
 {
     public class ConstantExpression : Expression
     {
-        public static ConstantExpression Zero => new ConstantExpression(Fraction.Zero);
-        public static ConstantExpression One => new ConstantExpression(Fraction.One);
+        public static ConstantExpression Zero => Fraction.Zero;
+        public static ConstantExpression One => Fraction.One;
 
         public Fraction Value { get; }
 
@@ -16,11 +16,8 @@ namespace Rubidium
             Value = value;
         }
 
-        public override Expression SubstituteVariables(Dictionary<string, Fraction> variableValues) => this;
+        public override Expression SubstituteVariables(Dictionary<string, Fraction> variableValues, Dictionary<string, Expression> variableExpressions) => this;
 
         public override string ToString() => Value.ToString();
-
-        public static implicit operator ConstantExpression(Fraction f) => new ConstantExpression(f);
-        public static implicit operator Fraction(ConstantExpression c) => c.Value;
     }
 }

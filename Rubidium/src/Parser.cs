@@ -155,7 +155,7 @@ namespace Rubidium
             if (first is IntegerToken integer)
             {
                 length = 1;
-                return new ConstantExpression(integer.IntegerValue);
+                return (Fraction)integer.IntegerValue;
             }
             else if (first is SymbolToken symbol)
             {

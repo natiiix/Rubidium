@@ -8,7 +8,7 @@ namespace Rubidium
         public abstract IEnumerable<string> Variables { get; }
         public bool ContainsVariables => Variables.Count() > 0;
 
-        public abstract Expression SubstituteVariables(Dictionary<string, Fraction> variableValues);
+        public abstract Expression SubstituteVariables(Dictionary<string, Fraction> variableValues, Dictionary<string, Expression> variableExpressions);
 
         public static Expression operator -(Expression expr) =>
             NegatedExpression.Build(expr);

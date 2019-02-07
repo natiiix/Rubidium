@@ -23,7 +23,7 @@ namespace Rubidium
         {
             if (expressions.Count() == 0)
             {
-                return new ConstantExpression(baseConstant);
+                return baseConstant;
             }
 
             Fraction constantPart = baseConstant;
@@ -47,8 +47,7 @@ namespace Rubidium
                 }
                 else if (expr is MultiplicationExpression multiplication && multiplication.IsVariableWithCoefficient)
                 {
-                    string varName = (multiplication.VariableParts[0] as VariableExpression).Name;
-                    variableCoefficients[varName] = (variableCoefficients.GetValueOrDefault(varName) ?? Fraction.Zero) + multiplication.Coefficient;
+                    variableCoefficients[multiplication.VariableName] = (variableCoefficients.GetValueOrDefault(multiplication.VariableName) ?? Fraction.Zero) + multiplication.Coefficient;
                 }
                 else
                 {
@@ -58,12 +57,12 @@ namespace Rubidium
 
             foreach (var coeff in variableCoefficients)
             {
-                variableParts.Add(new ConstantExpression(coeff.Value) * new VariableExpression(coeff.Key));
+                variableParts.Add(coeff.Value * new VariableExpression(coeff.Key));
             }
 
             if (variableParts.Count == 0)
             {
-                return new ConstantExpression(constantPart);
+                return constantPart;
             }
             else if (constantPart.IsZero && variableParts.Count == 1)
             {
@@ -73,12 +72,32 @@ namespace Rubidium
             return new AdditionExpression(constantPart, variableParts);
         }
 
+        public Expression Multiply(Fraction factor)
+        {
+            if (factor.IsZero)
+            {
+                return ConstantExpression.Zero;
+            }
+            else if (factor == Fraction.One)
+            {
+                return this;
+            }
+            else if (factor == Fraction.NegativeOne)
+            {
+                return -this;
+            }
+            else
+            {
+                return Build(Constant * factor, VariableParts.Select(x => x * factor));
+            }
+        }
+
         public static Expression Build(IEnumerable<Expression> expressions) => Build(Fraction.Zero, expressions);
 
         public static Expression Build(params Expression[] expressions) => Build(expressions as IEnumerable<Expression>);
 
-        public override Expression SubstituteVariables(Dictionary<string, Fraction> variableValues) =>
-            Build(Constant, VariableParts.Select(x => x.SubstituteVariables(variableValues)));
+        public override Expression SubstituteVariables(Dictionary<string, Fraction> variableValues, Dictionary<string, Expression> variableExpressions) =>
+            Build(Constant, VariableParts.Select(x => x.SubstituteVariables(variableValues, variableExpressions)));
 
         public override string ToString() =>
             "(" + (Constant.IsZero ? string.Empty : $"{Constant} + ") + string.Join(" + ", VariableParts.Select(x => x.ToString())) + ")";
