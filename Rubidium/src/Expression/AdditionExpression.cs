@@ -47,8 +47,7 @@ namespace Rubidium
                 }
                 else if (expr is MultiplicationExpression multiplication && multiplication.IsVariableWithCoefficient)
                 {
-                    string varName = (multiplication.VariableParts[0] as VariableExpression).Name;
-                    variableCoefficients[varName] = (variableCoefficients.GetValueOrDefault(varName) ?? Fraction.Zero) + multiplication.Coefficient;
+                    variableCoefficients[multiplication.VariableName] = (variableCoefficients.GetValueOrDefault(multiplication.VariableName) ?? Fraction.Zero) + multiplication.Coefficient;
                 }
                 else
                 {
