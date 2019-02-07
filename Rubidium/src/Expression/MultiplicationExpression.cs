@@ -43,19 +43,35 @@ namespace Rubidium
                     coefficient *= multiplication.Coefficient;
                     variableParts.AddRange(multiplication.VariableParts);
                 }
+                else if (expr is NegatedExpression negation)
+                {
+                    coefficient = -coefficient;
+                    variableParts.Add(negation.Expression);
+                }
                 else
                 {
                     variableParts.Add(expr);
                 }
             }
 
-            if (coefficient.IsZero || variableParts.Count == 0)
+            if (variableParts.Count == 0 || coefficient.IsZero)
             {
                 return coefficient;
             }
-            else if (coefficient == Fraction.One && variableParts.Count == 1)
+            else if (variableParts.Count == 1)
             {
-                return variableParts[0];
+                if (coefficient == Fraction.One)
+                {
+                    return variableParts[0];
+                }
+                else if (coefficient == Fraction.NegativeOne)
+                {
+                    return -variableParts[0];
+                }
+                else if (variableParts[0] is AdditionExpression addition)
+                {
+                    return addition.Multiply(coefficient);
+                }
             }
 
             return new MultiplicationExpression(coefficient, variableParts);
