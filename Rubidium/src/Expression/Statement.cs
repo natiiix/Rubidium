@@ -8,8 +8,9 @@ namespace Rubidium
         public Expression Left { get; }
         public Expression Right { get; }
 
-        public IEnumerable<string> Variables { get; }
+        public Statement SwappedSides => new Statement(Right, Left);
 
+        public IEnumerable<string> Variables { get; }
         public bool ContainsVariables { get; }
 
         public Statement(Expression left, Expression right)
