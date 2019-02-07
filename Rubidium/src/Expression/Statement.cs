@@ -23,7 +23,7 @@ namespace Rubidium
 
         public override string ToString() => $"{Left} = {Right}";
 
-        public Statement SubstituteVariables(Dictionary<string, Fraction> variableValues) =>
-            new Statement(Left.SubstituteVariables(variableValues), Right.SubstituteVariables(variableValues));
+        public Statement SubstituteVariables(Dictionary<string, Fraction> variableValues, Dictionary<string, Expression> variableExpressions) =>
+            new Statement(Left.SubstituteVariables(variableValues, variableExpressions), Right.SubstituteVariables(variableValues, variableExpressions));
     }
 }

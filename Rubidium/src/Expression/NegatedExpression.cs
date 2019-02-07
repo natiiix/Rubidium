@@ -38,8 +38,8 @@ namespace Rubidium
             }
         }
 
-        public override Expression SubstituteVariables(Dictionary<string, Fraction> variableValues) =>
-            Build(Expression.SubstituteVariables(variableValues));
+        public override Expression SubstituteVariables(Dictionary<string, Fraction> variableValues, Dictionary<string, Expression> variableExpressions) =>
+            Build(Expression.SubstituteVariables(variableValues, variableExpressions));
 
         public override string ToString() => $"-({Expression})";
     }

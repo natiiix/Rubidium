@@ -38,14 +38,22 @@ namespace Rubidium
                 {
                     PrintIfVerbose($"{s} : {(s.Left - s.Right) is ConstantExpression constant && constant.Value == 0}");
                 }
-                else if (s.Variables.Any(x => VariableValues.ContainsKey(x)))
+                else if (s.Variables.Any(x => VariableValues.ContainsKey(x) || VariableExpressions.ContainsKey(x)))
                 {
-                    newStatements.Add(s.SubstituteVariables(VariableValues));
+                    newStatements.Add(s.SubstituteVariables(VariableValues, VariableExpressions));
                 }
                 else if (s.Left is VariableExpression leftVariable &&
-                    FreeVariables.Contains(leftVariable.Name))
+                    FreeVariables.Contains(leftVariable.Name) &&
+                    IsSimplifiedVariableExpression(s.Right, leftVariable.Name, out bool varIsOnlyVar))
                 {
-                    VariableExpressions[leftVariable.Name] = s.Right;
+                    if (varIsOnlyVar)
+                    {
+                        keepStatements.Add(s);
+                    }
+                    else
+                    {
+                        VariableExpressions[leftVariable.Name] = s.Right;
+                    }
                 }
                 else if (s.Right is VariableExpression rightVariable)
                 {
@@ -53,9 +61,16 @@ namespace Rubidium
                 }
                 else if (s.Left is MultiplicationExpression leftMultiplication &&
                     leftMultiplication.IsVariableWithCoefficient &&
-                    FreeVariables.Contains(leftMultiplication.VariableName))
+                    IsSimplifiedVariableExpression(s.Right, leftMultiplication.VariableName, out bool multIsOnlyVar))
                 {
-                    VariableExpressions[leftMultiplication.VariableName] = s.Right / new ConstantExpression(leftMultiplication.Coefficient);
+                    if (multIsOnlyVar)
+                    {
+                        keepStatements.Add(s);
+                    }
+                    else
+                    {
+                        VariableExpressions[leftMultiplication.VariableName] = s.Right / new ConstantExpression(leftMultiplication.Coefficient);
+                    }
                 }
                 else if (s.Left is AdditionExpression leftAddition &&
                     (s.Right is AdditionExpression || !leftAddition.Constant.IsZero || leftAddition.VariableParts.Any(x => IsUsableVariable(x, expressedVariables))))
@@ -119,7 +134,7 @@ namespace Rubidium
                 }
                 else
                 {
-                    Expression newExpr = varExpr.Value.SubstituteVariables(VariableValues);
+                    Expression newExpr = varExpr.Value.SubstituteVariables(VariableValues, VariableExpressions);
 
                     if (newExpr is ConstantExpression newConstant)
                     {
@@ -162,6 +177,26 @@ namespace Rubidium
             (expr is VariableExpression varExpr && FreeVariables.Contains(varExpr.Name) && !expressedVariables.Contains(varExpr.Name)) ||
             (expr is MultiplicationExpression multiExpr && multiExpr.IsVariableWithCoefficient &&
                 FreeVariables.Contains(multiExpr.VariableName) && !expressedVariables.Contains(multiExpr.VariableName));
+
+        private bool IsSimplifiedVariableExpression(Expression rightExpr, string varName, out bool isOnlyVar)
+        {
+            if (FreeVariables.Contains(varName))
+            {
+                if (!rightExpr.Variables.Contains(varName))
+                {
+                    isOnlyVar = false;
+                    return true;
+                }
+                else if (rightExpr.Variables.Count(x => x != varName) == 0)
+                {
+                    isOnlyVar = true;
+                    return true;
+                }
+            }
+
+            isOnlyVar = false;
+            return false;
+        }
 
         private void PrintIfVerbose(string str)
         {

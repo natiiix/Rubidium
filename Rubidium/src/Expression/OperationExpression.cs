@@ -32,8 +32,8 @@ namespace Rubidium
             this(expressions, GenerateOperations(op, expressions.Count - 1))
         { }
 
-        public override Expression SubstituteVariables(Dictionary<string, Fraction> variableValues) =>
-            Build(Expressions.Select(x => x.SubstituteVariables(variableValues)).ToList(), Operations);
+        public override Expression SubstituteVariables(Dictionary<string, Fraction> variableValues, Dictionary<string, Expression> variableExpressions) =>
+            Build(Expressions.Select(x => x.SubstituteVariables(variableValues, variableExpressions)).ToList(), Operations);
 
         public static Expression Build(List<Expression> expressions, List<Operation> operations)
         {

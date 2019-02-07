@@ -16,7 +16,7 @@ namespace Rubidium
             Value = value;
         }
 
-        public override Expression SubstituteVariables(Dictionary<string, Fraction> variableValues) => this;
+        public override Expression SubstituteVariables(Dictionary<string, Fraction> variableValues, Dictionary<string, Expression> variableExpressions) => this;
 
         public override string ToString() => Value.ToString();
 
