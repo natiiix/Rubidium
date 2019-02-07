@@ -8,12 +8,18 @@ namespace Rubidium
     public class Fraction : IComparable<Fraction>
     {
         public static Fraction Zero => new Fraction(0);
+        public static Fraction One => new Fraction(1);
+        public static Fraction NegativeOne => new Fraction(-1);
 
         public BigInteger Numerator { get; private set; }
         public BigInteger Denominator { get; private set; }
 
         public bool IsZero => Numerator.IsZero;
-        public Fraction AbsoluteValue => Numerator.Sign < 0 ? -this : this;
+        public bool Positive => Numerator.Sign > 0;
+        public bool Negative => Numerator.Sign < 0;
+        public bool IsWholeNumber => Denominator.IsOne;
+        public Fraction AbsoluteValue => Positive ? this : -this;
+        public Fraction Square => new Fraction(Numerator * Numerator, Denominator * Denominator);
         public Fraction SquareRoot => (Fraction)Math.Sqrt((double)this);
 
         public Fraction(BigInteger numerator, BigInteger denominator)
@@ -95,15 +101,18 @@ namespace Rubidium
 
         public override int GetHashCode() => Numerator.GetHashCode() ^ Denominator.GetHashCode();
 
-        public override string ToString() => $"({Numerator}/{Denominator})";
+        public override string ToString() => IsWholeNumber ? Numerator.ToString() : $"({Numerator}/{Denominator})";
 
         public static implicit operator Fraction(BigInteger b) => new Fraction(b);
 
         public static implicit operator Fraction(int i) => new Fraction(i);
 
         public static explicit operator Fraction(double d) => FromDouble(d);
+        public static implicit operator Fraction(ConstantExpression c) => c.Value;
 
         public static explicit operator double(Fraction f) => (double)f.Numerator / (double)f.Denominator;
+
+        public static implicit operator ConstantExpression(Fraction f) => new ConstantExpression(f);
 
         public static Fraction operator -(Fraction f) => new Fraction(-f.Numerator, f.Denominator);
 
@@ -122,14 +131,26 @@ namespace Rubidium
 
         public static Fraction operator ^(Fraction value, Fraction exponent)
         {
-            if (exponent.Denominator == 1 && exponent.Numerator >= 0 && exponent.Numerator <= int.MaxValue)
+            if (exponent.IsWholeNumber && exponent.Numerator >= int.MinValue && exponent.Numerator <= int.MaxValue)
             {
                 int exp = (int)exponent.Numerator;
-                return new Fraction(BigInteger.Pow(value.Numerator, exp), BigInteger.Pow(value.Denominator, exp));
+
+                if (exp > 0)
+                {
+                    return new Fraction(BigInteger.Pow(value.Numerator, exp), BigInteger.Pow(value.Denominator, exp));
+                }
+                else if (exp < 0)
+                {
+                    return new Fraction(BigInteger.Pow(value.Denominator, -exp), BigInteger.Pow(value.Numerator, -exp));
+                }
+                else
+                {
+                    return Fraction.One;
+                }
             }
             else
             {
-                // throw new NotImplementedException($"Exponent must be an integer within the range 0 - {int.MaxValue}");
+                // throw new NotImplementedException($"Exponent must be an integer within the range {int.MinValue} - {int.MaxValue}");
 
                 double result = Math.Pow((double)value, (double)exponent);
                 return (Fraction)result;
