@@ -34,9 +34,16 @@ namespace Rubidium
 
             foreach (Statement s in Statements)
             {
-                if (!s.Left.ContainsVariables && !s.Right.ContainsVariables)
+                if (!s.Left.ContainsVariables)
                 {
-                    PrintIfVerbose($"{s} : {(s.Left - s.Right) is ConstantExpression constant && constant.Value == 0}");
+                    if (s.Right.ContainsVariables)
+                    {
+                        newStatements.Add(s.SwappedSides);
+                    }
+                    else
+                    {
+                        PrintIfVerbose($"{s} : {(s.Left - s.Right) is ConstantExpression constant && constant.Value == 0}");
+                    }
                 }
                 else if (s.Variables.Any(x => VariableValues.ContainsKey(x) || VariableExpressions.ContainsKey(x)))
                 {
@@ -112,10 +119,20 @@ namespace Rubidium
                 }
                 else if (s.Right.ContainsVariables)
                 {
-                    newStatements.Add(s.Left.ContainsVariables ?
-                        new Statement(s.Left - s.Right, ConstantExpression.Zero) :
-                        new Statement(s.Right, s.Left)
-                    );
+                    if (s.Right is AdditionExpression rightAddition)
+                    {
+                        newStatements.Add(new Statement(
+                            s.Left - AdditionExpression.Build(rightAddition.VariableParts),
+                            rightAddition.Constant
+                        ));
+                    }
+                    else
+                    {
+                        newStatements.Add(new Statement(
+                            s.Left - s.Right,
+                            ConstantExpression.Zero
+                        ));
+                    }
                 }
                 else
                 {
