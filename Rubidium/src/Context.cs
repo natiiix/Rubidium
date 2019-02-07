@@ -45,13 +45,10 @@ namespace Rubidium
                     newStatements.Add(new Statement(s.Right, s.Left));
                 }
                 else if (s.Left is MultiplicationExpression leftMultiplication &&
-                    leftMultiplication.VariableParts.Count == 1 &&
-                    leftMultiplication.VariableParts[0] is VariableExpression)
+                    leftMultiplication.IsVariableWithCoefficient &&
+                    FreeVariables.Contains(leftMultiplication.VariableName))
                 {
-                    newStatements.Add(new Statement(
-                        leftMultiplication.VariableParts[0],
-                        s.Right / new ConstantExpression(leftMultiplication.Coefficient)
-                    ));
+                    VariableExpressions[leftMultiplication.VariableName] = s.Right / new ConstantExpression(leftMultiplication.Coefficient);
                 }
                 else if (s.Left is AdditionExpression leftAddition &&
                     (s.Right is AdditionExpression || !leftAddition.Constant.IsZero))
