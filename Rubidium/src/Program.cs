@@ -3,7 +3,7 @@ using System.Collections.Generic;
 
 namespace Rubidium
 {
-    public class Program
+    public static class Program
     {
         private static void Main(string[] args)
         {
@@ -37,6 +37,17 @@ namespace Rubidium
             while (context.FindNewStatements()) ;
 
             Console.WriteLine(context);
+        }
+
+        public static Context Evaluate(string query)
+        {
+            List<Token> tokens = Lexer.Tokenize(query);
+            List<Statement> statements = Parser.ParseStatements(tokens);
+            Context context = new Context(statements, false);
+
+            while (context.FindNewStatements()) ;
+
+            return context;
         }
     }
 }
