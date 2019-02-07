@@ -89,105 +89,37 @@ namespace Rubidium.Tests
         [Fact]
         public static void TestPositive()
         {
-            for (int i = 1; i < SIZE_LIMIT; i *= 2)
+            ForEachPositive(x =>
             {
-                for (int j = 1; j < SIZE_LIMIT; j *= 2)
-                {
-                    Fraction f = new Fraction(i, j);
+                Assert.True(x.Positive);
 
-                    Assert.True(f.Positive);
-
-                    Assert.False(f.IsZero);
-                    Assert.False(f.Negative);
-                }
-            }
-
-            for (int i = -1; i > -SIZE_LIMIT; i *= 2)
-            {
-                for (int j = -1; j > -SIZE_LIMIT; j *= 2)
-                {
-                    Fraction f = new Fraction(i, j);
-
-                    Assert.True(f.Positive);
-
-                    Assert.False(f.IsZero);
-                    Assert.False(f.Negative);
-                }
-            }
+                Assert.False(x.IsZero);
+                Assert.False(x.Negative);
+            });
         }
 
         [Fact]
         public static void TestNegative()
         {
-            for (int i = -1; i > -SIZE_LIMIT; i *= 2)
+            ForEachNegative(x =>
             {
-                for (int j = 1; j < SIZE_LIMIT; j *= 2)
-                {
-                    Fraction f = new Fraction(i, j);
+                Assert.True(x.Negative);
 
-                    Assert.True(f.Negative);
-
-                    Assert.False(f.IsZero);
-                    Assert.False(f.Positive);
-                }
-            }
-
-            for (int i = 1; i < SIZE_LIMIT; i *= 2)
-            {
-                for (int j = -1; j > -SIZE_LIMIT; j *= 2)
-                {
-                    Fraction f = new Fraction(i, j);
-
-                    Assert.True(f.Negative);
-
-                    Assert.False(f.IsZero);
-                    Assert.False(f.Positive);
-                }
-            }
+                Assert.False(x.IsZero);
+                Assert.False(x.Positive);
+            });
         }
 
         [Fact]
         public static void TestAbsoluteValue()
         {
-            for (int i = 1; i < SIZE_LIMIT; i *= 2)
+            ForEachPositive(x => Assert.Equal(x, x.AbsoluteValue));
+
+            ForEachNegative(x =>
             {
-                for (int j = 1; j < SIZE_LIMIT; j *= 2)
-                {
-                    Fraction f = new Fraction(i, j);
-                    Assert.Equal(f, f.AbsoluteValue);
-                }
-            }
-
-            for (int i = -1; i > -SIZE_LIMIT; i *= 2)
-            {
-                for (int j = -1; j > -SIZE_LIMIT; j *= 2)
-                {
-                    Fraction f = new Fraction(i, j);
-                    Assert.Equal(f, f.AbsoluteValue);
-                }
-            }
-
-            for (int i = -1; i > -SIZE_LIMIT; i *= 2)
-            {
-                for (int j = 1; j < SIZE_LIMIT; j *= 2)
-                {
-                    Fraction f = new Fraction(i, j);
-
-                    Assert.Equal(-f, f.AbsoluteValue);
-                    Assert.NotEqual(f, f.AbsoluteValue);
-                }
-            }
-
-            for (int i = 1; i < SIZE_LIMIT; i *= 2)
-            {
-                for (int j = -1; j > -SIZE_LIMIT; j *= 2)
-                {
-                    Fraction f = new Fraction(i, j);
-
-                    Assert.Equal(-f, f.AbsoluteValue);
-                    Assert.NotEqual(f, f.AbsoluteValue);
-                }
-            }
+                Assert.Equal(-x, x.AbsoluteValue);
+                Assert.NotEqual(x, x.AbsoluteValue);
+            });
         }
 
         private static void ForEachPositive(Action<Fraction> callback)
