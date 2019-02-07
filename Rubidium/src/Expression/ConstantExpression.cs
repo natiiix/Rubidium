@@ -4,8 +4,8 @@ namespace Rubidium
 {
     public class ConstantExpression : Expression
     {
-        public static ConstantExpression Zero => new ConstantExpression(Fraction.Zero);
-        public static ConstantExpression One => new ConstantExpression(Fraction.One);
+        public static ConstantExpression Zero => Fraction.Zero;
+        public static ConstantExpression One => Fraction.One;
 
         public Fraction Value { get; }
 

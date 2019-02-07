@@ -76,7 +76,7 @@ namespace Rubidium
                     }
                     else
                     {
-                        VariableExpressions[leftMultiplication.VariableName] = s.Right / new ConstantExpression(leftMultiplication.Coefficient);
+                        VariableExpressions[leftMultiplication.VariableName] = s.Right / leftMultiplication.Coefficient;
                     }
                 }
                 else if (s.Left is AdditionExpression leftAddition &&
@@ -92,14 +92,14 @@ namespace Rubidium
 
                         newStatements.Add(new Statement(
                             AdditionExpression.Build(variableParts),
-                            new ConstantExpression(constant)
+                            constant
                         ));
                     }
                     else if (!leftAddition.Constant.IsZero)
                     {
                         newStatements.Add(new Statement(
                             AdditionExpression.Build(leftAddition.VariableParts),
-                            s.Right + new ConstantExpression(-leftAddition.Constant)
+                            s.Right - leftAddition.Constant
                         ));
                     }
                     else

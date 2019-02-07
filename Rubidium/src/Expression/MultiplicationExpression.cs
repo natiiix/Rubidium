@@ -26,7 +26,7 @@ namespace Rubidium
         {
             if (expressions.Count() == 0)
             {
-                return new ConstantExpression(baseCoefficient);
+                return baseCoefficient;
             }
 
             Fraction coefficient = baseCoefficient;
@@ -51,7 +51,7 @@ namespace Rubidium
 
             if (coefficient.IsZero || variableParts.Count == 0)
             {
-                return new ConstantExpression(coefficient);
+                return coefficient;
             }
             else if (coefficient == Fraction.One && variableParts.Count == 1)
             {

@@ -140,7 +140,7 @@ namespace Rubidium
                 throw new Exception("Unexpected post-evaluation state");
             }
 
-            return new ConstantExpression(values.First.Value);
+            return values.First.Value;
         }
 
         private static List<Operation> GenerateOperations(Operation op, int count)

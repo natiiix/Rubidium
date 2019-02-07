@@ -22,7 +22,7 @@ namespace Rubidium
             }
             else if (expr is ConstantExpression constant)
             {
-                return new ConstantExpression(-constant.Value);
+                return -constant.Value;
             }
             else if (expr is AdditionExpression addition)
             {

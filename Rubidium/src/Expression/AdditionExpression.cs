@@ -23,7 +23,7 @@ namespace Rubidium
         {
             if (expressions.Count() == 0)
             {
-                return new ConstantExpression(baseConstant);
+                return baseConstant;
             }
 
             Fraction constantPart = baseConstant;
@@ -57,12 +57,12 @@ namespace Rubidium
 
             foreach (var coeff in variableCoefficients)
             {
-                variableParts.Add(new ConstantExpression(coeff.Value) * new VariableExpression(coeff.Key));
+                variableParts.Add(coeff.Value * new VariableExpression(coeff.Key));
             }
 
             if (variableParts.Count == 0)
             {
-                return new ConstantExpression(constantPart);
+                return constantPart;
             }
             else if (constantPart.IsZero && variableParts.Count == 1)
             {
