@@ -57,7 +57,7 @@ namespace Rubidium
                     VariableExpressions[leftMultiplication.VariableName] = s.Right / new ConstantExpression(leftMultiplication.Coefficient);
                 }
                 else if (s.Left is AdditionExpression leftAddition &&
-                    (s.Right is AdditionExpression || !leftAddition.Constant.IsZero))
+                    (s.Right is AdditionExpression || !leftAddition.Constant.IsZero || leftAddition.VariableParts.Any(IsUsableVariable)))
                 {
                     if (s.Right is AdditionExpression rightAddition)
                     {
@@ -72,11 +72,20 @@ namespace Rubidium
                             new ConstantExpression(constant)
                         ));
                     }
-                    else
+                    else if (!leftAddition.Constant.IsZero)
                     {
                         newStatements.Add(new Statement(
                             AdditionExpression.Build(leftAddition.VariableParts),
                             s.Right + new ConstantExpression(-leftAddition.Constant)
+                        ));
+                    }
+                    else
+                    {
+                        Expression usableVar = leftAddition.VariableParts.Find(IsUsableVariable);
+
+                        newStatements.Add(new Statement(
+                            usableVar,
+                            s.Right - AdditionExpression.Build(leftAddition.Constant, leftAddition.VariableParts.Where(x => x != usableVar))
                         ));
                     }
                 }
