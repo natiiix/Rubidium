@@ -9,9 +9,9 @@ namespace Rubidium
         private bool Verbose { get; }
         private IEnumerable<string> Variables { get; }
 
-        private List<Statement> Statements { get; }
-        private Dictionary<string, Expression> VariableExpressions { get; }
-        private Dictionary<string, Fraction> VariableValues { get; }
+        public List<Statement> Statements { get; }
+        public Dictionary<string, Expression> VariableExpressions { get; }
+        public Dictionary<string, Fraction> VariableValues { get; }
 
         private IEnumerable<string> FreeVariables => Variables.Where(x => !VariableExpressions.ContainsKey(x) && !VariableValues.ContainsKey(x));
 
