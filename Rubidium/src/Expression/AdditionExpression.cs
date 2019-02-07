@@ -72,6 +72,26 @@ namespace Rubidium
             return new AdditionExpression(constantPart, variableParts);
         }
 
+        public Expression Multiply(Fraction factor)
+        {
+            if (factor.IsZero)
+            {
+                return ConstantExpression.Zero;
+            }
+            else if (factor == Fraction.One)
+            {
+                return this;
+            }
+            else if (factor == Fraction.NegativeOne)
+            {
+                return -this;
+            }
+            else
+            {
+                return Build(Constant * factor, VariableParts.Select(x => x * factor));
+            }
+        }
+
         public static Expression Build(IEnumerable<Expression> expressions) => Build(Fraction.Zero, expressions);
 
         public static Expression Build(params Expression[] expressions) => Build(expressions as IEnumerable<Expression>);
