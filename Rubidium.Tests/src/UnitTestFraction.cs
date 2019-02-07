@@ -145,5 +145,49 @@ namespace Rubidium.Tests
                 }
             }
         }
+
+        [Fact]
+        public static void TestAbsoluteValue()
+        {
+            for (int i = 1; i < SIZE_LIMIT; i *= 2)
+            {
+                for (int j = 1; j < SIZE_LIMIT; j *= 2)
+                {
+                    Fraction f = new Fraction(i, j);
+                    Assert.Equal(f, f.AbsoluteValue);
+                }
+            }
+
+            for (int i = -1; i > -SIZE_LIMIT; i *= 2)
+            {
+                for (int j = -1; j > -SIZE_LIMIT; j *= 2)
+                {
+                    Fraction f = new Fraction(i, j);
+                    Assert.Equal(f, f.AbsoluteValue);
+                }
+            }
+
+            for (int i = -1; i > -SIZE_LIMIT; i *= 2)
+            {
+                for (int j = 1; j < SIZE_LIMIT; j *= 2)
+                {
+                    Fraction f = new Fraction(i, j);
+
+                    Assert.Equal(-f, f.AbsoluteValue);
+                    Assert.NotEqual(f, f.AbsoluteValue);
+                }
+            }
+
+            for (int i = 1; i < SIZE_LIMIT; i *= 2)
+            {
+                for (int j = -1; j > -SIZE_LIMIT; j *= 2)
+                {
+                    Fraction f = new Fraction(i, j);
+
+                    Assert.Equal(-f, f.AbsoluteValue);
+                    Assert.NotEqual(f, f.AbsoluteValue);
+                }
+            }
+        }
     }
 }
