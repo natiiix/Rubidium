@@ -143,6 +143,10 @@ namespace Rubidium
             return (newStatements.Count > 0 || (newVariablesValues > 0 && (keepStatements.Count > 0 || newVarExpressions.Count > 0)));
         }
 
+        private bool IsUsableVariable(Expression expr) =>
+            (expr is VariableExpression varExpr && FreeVariables.Contains(varExpr.Name)) ||
+            expr is MultiplicationExpression multiExpr && multiExpr.IsVariableWithCoefficient && FreeVariables.Contains(multiExpr.VariableName);
+
         private void PrintIfVerbose(string str)
         {
             if (Verbose)
