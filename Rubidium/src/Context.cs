@@ -50,34 +50,19 @@ namespace Rubidium
                     newStatements.Add(s.SubstituteVariables(VariableValues, VariableExpressions));
                 }
                 else if (s.Left is VariableExpression leftVariable &&
-                    FreeVariables.Contains(leftVariable.Name) &&
-                    IsSimplifiedVariableExpression(s.Right, leftVariable.Name, out bool varIsOnlyVar))
+                    IsVariableExpression(s.Right, leftVariable.Name))
                 {
-                    if (varIsOnlyVar)
-                    {
-                        keepStatements.Add(s);
-                    }
-                    else
-                    {
-                        VariableExpressions[leftVariable.Name] = s.Right;
-                    }
+                    VariableExpressions[leftVariable.Name] = s.Right;
                 }
                 else if (s.Right is VariableExpression rightVariable)
                 {
-                    newStatements.Add(new Statement(s.Right, s.Left));
+                    newStatements.Add(s.SwappedSides);
                 }
                 else if (s.Left is MultiplicationExpression leftMultiplication &&
                     leftMultiplication.IsVariableWithCoefficient &&
-                    IsSimplifiedVariableExpression(s.Right, leftMultiplication.VariableName, out bool multIsOnlyVar))
+                    IsVariableExpression(s.Right, leftMultiplication.VariableName))
                 {
-                    if (multIsOnlyVar)
-                    {
-                        keepStatements.Add(s);
-                    }
-                    else
-                    {
-                        VariableExpressions[leftMultiplication.VariableName] = s.Right / leftMultiplication.Coefficient;
-                    }
+                    VariableExpressions[leftMultiplication.VariableName] = s.Right / leftMultiplication.Coefficient;
                 }
                 else if (s.Left is AdditionExpression leftAddition &&
                     (s.Right is AdditionExpression || !leftAddition.Constant.IsZero || leftAddition.VariableParts.Any(x => IsUsableVariable(x, expressedVariables))))
@@ -195,25 +180,8 @@ namespace Rubidium
             (expr is MultiplicationExpression multiExpr && multiExpr.IsVariableWithCoefficient &&
                 FreeVariables.Contains(multiExpr.VariableName) && !expressedVariables.Contains(multiExpr.VariableName));
 
-        private bool IsSimplifiedVariableExpression(Expression rightExpr, string varName, out bool isOnlyVar)
-        {
-            if (FreeVariables.Contains(varName))
-            {
-                if (!rightExpr.Variables.Contains(varName))
-                {
-                    isOnlyVar = false;
-                    return true;
-                }
-                else if (rightExpr.Variables.Count(x => x != varName) == 0)
-                {
-                    isOnlyVar = true;
-                    return true;
-                }
-            }
-
-            isOnlyVar = false;
-            return false;
-        }
+        private bool IsVariableExpression(Expression rightExpr, string varName) =>
+            FreeVariables.Contains(varName) && !rightExpr.Variables.Contains(varName);
 
         private void PrintIfVerbose(string str)
         {
