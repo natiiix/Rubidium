@@ -7,38 +7,41 @@ namespace Rubidium
     {
         private static void Main(string[] args)
         {
-            string[] query =
+            Context context = null;
+
+            if (args.Length > 0)
             {
-                // x = { 6; -2 }
-                // "x1 = (-b + d) / 2a",
-                // "x2 = (-b - d) / 2a",
-                // "d = (b^2 - 4 a c)^(1/2)",
-                // "a = 2; b = -8; c = -24"
-                // "(-b + d) / 2a = x1",
-                // "(-b - d) / 2a = x2",
-                // "(b^2 - 4 a c)^(1/2) = d",
-                // "2 = a; -8 = b; -24 = c"
+                context = new Context(Parser.ParseStatements(
+                    Lexer.Tokenize(string.Join(';', args))
+                ));
+            }
+            else
+            {
+                List<Statement> statements = new List<Statement>();
 
-                // (x, y, z) = ( 3/10, 2/5, 0 )
-                "2x + y + 3z = 1",
-                "2x + 6y + 8z = 3",
-                "6x + 8y + 18z = 5"
+                while (true)
+                {
+                    Console.Write("Enter statement (leave empty to finish): ");
+                    string line = Console.ReadLine();
 
-                // "x = 5 + (7 - (5 + 12)) + 4"
-                // "x = 5 * (7 * (5 * 12)) * 4"
+                    if (string.IsNullOrEmpty(line))
+                    {
+                        break;
+                    }
 
-                // "10x - 5x + 10 = -15x + 20"
-            };
+                    statements.AddRange(Parser.ParseStatements(
+                        Lexer.Tokenize(line)
+                    ));
+                }
 
-            List<Token> tokens = Lexer.Tokenize(string.Join(';', query));
-            List<Statement> statements = Parser.ParseStatements(tokens);
-            Context context = new Context(statements);
+                context = new Context(statements);
+            }
 
-            Console.WriteLine($"Initial {context}{Environment.NewLine}");
+            Console.WriteLine($"-- Initial context state --{Environment.NewLine}{context}{Environment.NewLine}");
 
             while (context.FindNewStatements()) ;
 
-            Console.WriteLine(context);
+            Console.WriteLine($"-- Final context state --{Environment.NewLine}{context}");
         }
 
         public static Context Evaluate(string query)
