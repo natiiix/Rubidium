@@ -122,6 +122,15 @@ namespace Rubidium.Tests
             });
         }
 
+        private static void ForEachZero(Action<Fraction> callback)
+        {
+            for (int i = 1; i < SIZE_LIMIT; i *= 2)
+            {
+                callback(new Fraction(0, i));
+                callback(new Fraction(0, -i));
+            }
+        }
+
         private static void ForEachPositive(Action<Fraction> callback)
         {
             for (int i = 1; i < SIZE_LIMIT; i *= 2)
@@ -158,6 +167,13 @@ namespace Rubidium.Tests
                     callback(new Fraction(i, j));
                 }
             }
+        }
+
+        private static void ForEachFraction(Action<Fraction> callback)
+        {
+            ForEachZero(callback);
+            ForEachPositive(callback);
+            ForEachNegative(callback);
         }
     }
 }
