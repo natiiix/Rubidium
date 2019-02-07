@@ -142,6 +142,19 @@ namespace Rubidium.Tests
             });
         }
 
+        [Fact]
+        public static void TestSimplification()
+        {
+            ForEachFraction(x =>
+            {
+                for (int i = 1; i < SIZE_LIMIT; i *= 2)
+                {
+                    Assert.Equal(x, new Fraction(x.Numerator * i, x.Denominator * i));
+                    Assert.Equal(x, new Fraction(x.Numerator * -i, x.Denominator * -i));
+                }
+            });
+        }
+
         private static void ForEachZero(Action<Fraction> callback)
         {
             for (int i = 1; i < SIZE_LIMIT; i *= 2)
