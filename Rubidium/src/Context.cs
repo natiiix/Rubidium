@@ -6,6 +6,7 @@ namespace Rubidium
 {
     public class Context
     {
+        private bool Verbose { get; }
         private IEnumerable<string> Variables { get; }
 
         private List<Statement> Statements { get; }
@@ -14,8 +15,9 @@ namespace Rubidium
 
         private IEnumerable<string> FreeVariables => Variables.Where(x => !VariableExpressions.ContainsKey(x) && !VariableValues.ContainsKey(x));
 
-        public Context(List<Statement> initialStatements)
+        public Context(List<Statement> initialStatements, bool verbose = true)
         {
+            Verbose = verbose;
             Variables = initialStatements.GetVariables();
 
             Statements = new List<Statement>(initialStatements);
@@ -83,7 +85,7 @@ namespace Rubidium
                 }
                 else if (!s.Left.ContainsVariables && !s.Right.ContainsVariables)
                 {
-                    Console.WriteLine($"{s} : {(s.Left - s.Right) is ConstantExpression constant && constant.Value == 0}");
+                    PrintIfVerbose($"{s} : {(s.Left - s.Right) is ConstantExpression constant && constant.Value == 0}");
                 }
                 else
                 {
@@ -126,20 +128,30 @@ namespace Rubidium
             {
                 foreach (Statement s in newStatements)
                 {
-                    Console.WriteLine(s);
+                    PrintIfVerbose(s);
                 }
 
                 foreach (var varExpr in newVarExpressions)
                 {
                     VariableExpressions[varExpr.Key] = varExpr.Value;
-                    Console.WriteLine($"{varExpr.Key} = {varExpr.Value}");
+                    PrintIfVerbose($"{varExpr.Key} = {varExpr.Value}");
                 }
 
-                Console.WriteLine("--------------------------------");
+                PrintIfVerbose("--------------------------------");
             }
 
             return (newStatements.Count > 0 || (newVariablesValues > 0 && (keepStatements.Count > 0 || newVarExpressions.Count > 0)));
         }
+
+        private void PrintIfVerbose(string str)
+        {
+            if (Verbose)
+            {
+                Console.WriteLine(str);
+            }
+        }
+
+        private void PrintIfVerbose(object obj) => PrintIfVerbose(obj.ToString());
 
         public override string ToString()
         {
