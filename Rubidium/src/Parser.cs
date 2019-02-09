@@ -96,6 +96,15 @@ namespace Rubidium
             return new Statement(left, right);
         }
 
+        /// <summary>
+        /// Parses an addition expression.
+        /// If the top-level expression is not an addition,
+        /// the proper type of expression will be parsed and returned.
+        /// </summary>
+        /// <param name="tokens">Input list of tokens.</param>
+        /// <param name="start">Index of first token of the expression.</param>
+        /// <param name="length">Output variable for expression length (number of tokens used).</param>
+        /// <returns>Returns the parsed expression.</returns>
         private static Expression ParseAddition(List<Token> tokens, int start, out int length)
         {
             List<Expression> parts = new List<Expression>();
@@ -116,6 +125,15 @@ namespace Rubidium
             return AdditionExpression.Build(parts);
         }
 
+        /// <summary>
+        /// Parses a multiplication expression.
+        /// If the first expression is not a part of a multiplication,
+        /// it will be parsed and returned.
+        /// </summary>
+        /// <param name="tokens">Input list of tokens.</param>
+        /// <param name="start">Index of first token of the expression.</param>
+        /// <param name="length">Output variable for expression length (number of tokens used).</param>
+        /// <returns>Returns the parsed expression.</returns>
         private static Expression ParseMultiplication(List<Token> tokens, int start, out int length)
         {
             List<Expression> numeratorParts = new List<Expression>() { ConstantExpression.One };
@@ -156,6 +174,15 @@ namespace Rubidium
             );
         }
 
+        /// <summary>
+        /// Parses an exponent expression.
+        /// If the first expression has no exponent,
+        /// that expression will be parsed and returned instead.
+        /// </summary>
+        /// <param name="tokens">Input list of tokens.</param>
+        /// <param name="start">Index of first token of the expression.</param>
+        /// <param name="length">Output variable for expression length (number of tokens used).</param>
+        /// <returns>Returns the parsed expression.</returns>
         private static Expression ParseExponent(List<Token> tokens, int start, out int length)
         {
             Expression baseValue = ParseExpression(tokens, start, out int baseLen);
@@ -173,6 +200,14 @@ namespace Rubidium
             }
         }
 
+        /// <summary>
+        /// Parses a single expression.
+        /// It can be a constant, variable, negation or addition.
+        /// </summary>
+        /// <param name="tokens">Input list of tokens.</param>
+        /// <param name="start">Index of first token of the expression.</param>
+        /// <param name="length">Output variable for expression length (number of tokens used).</param>
+        /// <returns>Returns the parsed expression.</returns>
         private static Expression ParseExpression(List<Token> tokens, int start, out int length)
         {
             Token first = tokens[start];
