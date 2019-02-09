@@ -245,26 +245,36 @@ namespace Rubidium
         /// <returns>Returns the parsed expression.</returns>
         private static Expression ParseExpression(List<Token> tokens, int start, out int length)
         {
+            // Get the first token.
             Token first = tokens[start];
 
+            // Number token.
+            // Return a constant expression.
             if (first is NumberToken number)
             {
                 length = 1;
                 return number.NumericValue;
             }
+            // Symbol token.
+            // Return a variable expression.
             else if (first is SymbolToken symbol)
             {
                 length = 1;
                 return new VariableExpression(symbol.StringValue);
             }
+            // Special token.
             else if (first is SpecialToken firstSpecial)
             {
+                // Subtraction token indicates unary subtraction.
+                // Return negated expression of the expression after the subtraction token.
                 if (firstSpecial.Subtraction)
                 {
                     Expression expr = ParseExpression(tokens, start + 1, out int exprLen);
                     length = exprLen + 1;
                     return NegatedExpression.Build(expr);
                 }
+                // Left parenthesis indicates beginning of a nested parenthesis expression.
+                // Parse the inner expression and return it.
                 else if (firstSpecial.LeftParenthesis)
                 {
                     Expression expr = ParseAddition(tokens, start + 1, out int exprLen);
@@ -279,6 +289,7 @@ namespace Rubidium
                 }
             }
 
+            // If unable to parse an expression using one of the rules above, throw an exception.
             throw new Exception($"Unexpected token \"{tokens[start].StringValue}\" at index {tokens[start].Index}");
         }
     }
