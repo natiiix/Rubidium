@@ -7,6 +7,8 @@ namespace Rubidium
 {
     public class Fraction : IComparable<Fraction>
     {
+        public static char DecimalSeparator => '.';
+
         public static Fraction Zero => new Fraction(0);
         public static Fraction One => new Fraction(1);
         public static Fraction NegativeOne => new Fraction(-1);
@@ -80,6 +82,43 @@ namespace Rubidium
 
             return new Fraction(numerator, denominator);
         }
+
+        public static bool TryParse(string str, out Fraction value)
+        {
+            BigInteger numerator = 0;
+
+            bool decimalPart = false;
+            int decimalDigits = 0;
+
+            foreach (char c in str)
+            {
+                if (char.IsDigit(c))
+                {
+                    numerator *= 10;
+                    numerator += c - '0';
+
+                    if (decimalPart)
+                    {
+                        decimalDigits++;
+                    }
+                }
+                else if (!decimalPart && c == DecimalSeparator)
+                {
+                    decimalPart = true;
+                }
+                else
+                {
+                    value = Fraction.Zero;
+                    return false;
+                }
+            }
+
+            value = new Fraction(numerator, BigInteger.Pow(10, decimalDigits));
+            return true;
+        }
+
+        public static Fraction Parse(string str) =>
+            TryParse(str, out Fraction value) ? value : throw new ArgumentException($"Not a valid number: {str}");
 
         public static Fraction Sum(IEnumerable<Fraction> values)
         {
