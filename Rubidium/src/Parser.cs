@@ -216,14 +216,18 @@ namespace Rubidium
         /// <returns>Returns the parsed expression.</returns>
         private static Expression ParseExponent(List<Token> tokens, int start, out int length)
         {
+            // Parse base value sub-expression.
             Expression baseValue = ParseExpression(tokens, start, out int baseLen);
 
+            // If the base value is followed by a power operator token,
+            // parse the exponent expression and return an exponent expression.
             if (start + baseLen < tokens.Count && tokens[start + baseLen] is SpecialToken special && special.Power)
             {
                 Expression exponent = ParseExponent(tokens, start + baseLen + 1, out int exponentLen);
                 length = baseLen + 1 + exponentLen;
                 return ExponentExpression.Build(baseValue, exponent);
             }
+            // Otherwise return the base value expression.
             else
             {
                 length = baseLen;
