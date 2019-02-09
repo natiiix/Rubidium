@@ -4,8 +4,11 @@ namespace Rubidium
 {
     public class NumberToken : Token
     {
-        public Fraction NumericValue => Fraction.Parse(StringValue);
+        public Fraction NumericValue { get; }
 
-        public NumberToken(string str, int index) : base(str, index) { }
+        public NumberToken(string str, int index) : base(str, index)
+        {
+            NumericValue = Fraction.Parse(StringValue);
+        }
     }
 }
