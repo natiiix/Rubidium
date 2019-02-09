@@ -3,6 +3,9 @@ using System.Collections.Generic;
 
 namespace Rubidium
 {
+    /// <summary>
+    /// Core class of the project.
+    /// </summary>
     public static class Program
     {
         /// <summary>
