@@ -1,7 +1,7 @@
 namespace Rubidium
 {
     /// <summary>
-    /// Abstract class that encapsulates or token types.
+    /// Abstract class that encapsulates all token types.
     /// </summary>
     public abstract class Token
     {
