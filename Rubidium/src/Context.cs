@@ -4,15 +4,40 @@ using System.Linq;
 
 namespace Rubidium
 {
+    /// <summary>
+    /// Class representing a set of available statements, variable expressions and variable values.
+    /// </summary>
     public class Context
     {
+        /// <summary>
+        /// Indicates if debugging post-iteration summaries
+        /// should be printed at the end of each iteration.
+        /// </summary>
         private bool Verbose { get; }
+        /// <summary>
+        /// Enumerable of all distinct variables used in any of the initial statements.
+        /// </summary>
         private IEnumerable<string> Variables { get; }
 
+        /// <summary>
+        /// List of currently available (not yer fully processed) statements.
+        /// </summary>
         public List<Statement> Statements { get; }
+        /// <summary>
+        /// List of available expressed variables, which still depend on at least one variable
+        /// and therefore cannot be fully evaluated to a constant yet.
+        /// </summary>
         public Dictionary<string, Expression> VariableExpressions { get; }
+        /// <summary>
+        /// List of available constant values of variables.
+        /// This variables have been finally bound and will never change.
+        /// </summary>
         public Dictionary<string, Fraction> VariableValues { get; }
 
+        /// <summary>
+        /// Enumerable of variables, which are still free (not bound to a constant or expression).
+        /// The algorithm will try various simplifications in order to express these variables.
+        /// </summary>
         private IEnumerable<string> FreeVariables => Variables.Where(x => !VariableExpressions.ContainsKey(x) && !VariableValues.ContainsKey(x));
 
         public Context(List<Statement> initialStatements, bool verbose = true)
