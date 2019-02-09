@@ -5,6 +5,12 @@ using System.Numerics;
 
 namespace Rubidium
 {
+    /// <summary>
+    /// Class representing a numeric value as a fraction.
+    /// The value can either be a whole number of an arbitrary size or
+    /// a decimal number of an arbitrary size and precision.
+    /// Fraction supports most arithmetic and comparison operations.
+    /// </summary>
     public class Fraction : IComparable<Fraction>
     {
         public static char DecimalSeparator => '.';
