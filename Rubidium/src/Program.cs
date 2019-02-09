@@ -36,7 +36,7 @@ namespace Rubidium
                     string line = Console.ReadLine();
 
                     // Stop once the user enters an empty line.
-                    if (string.IsNullOrEmpty(line))
+                    if (string.IsNullOrWhiteSpace(line))
                     {
                         break;
                     }
