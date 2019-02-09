@@ -145,42 +145,64 @@ namespace Rubidium
         /// <returns>Returns the parsed expression.</returns>
         private static Expression ParseMultiplication(List<Token> tokens, int start, out int length)
         {
-            List<Expression> numeratorParts = new List<Expression>() { ConstantExpression.One };
-            List<Expression> denominatorParts = new List<Expression>() { ConstantExpression.One };
+            List<Expression> numeratorParts = new List<Expression>()
+            {
+                // Parse first sub-expression, which always belongs to the numerator.
+                ParseExponent(tokens, start, out int firstLen)
+            };
 
-            Expression firstPart = ParseExponent(tokens, start, out int firstLen);
-            numeratorParts.Add(firstPart);
+            List<Expression> denominatorParts = new List<Expression>() { };
 
+            // Index of last used token.
             int end = start + firstLen;
+            // Indicates if the last operation was a division.
             bool lastWasDivision = false;
 
+            // Keep going until the end of tokens is reached.
             while (end < tokens.Count)
             {
+                // Multiplication / division token.
                 if (tokens[end] is SpecialToken special && (special.Multiplication || special.Division))
                 {
+                    // Parse next sub-expression and add it to numerator or denominator part
+                    // based on the preceding operator.
                     Expression nextPart = ParseExponent(tokens, end + 1, out int nextLen);
                     (special.Division ? denominatorParts : numeratorParts).Add(nextPart);
                     end += 1 + nextLen;
                     lastWasDivision = special.Division;
                 }
+                // Implicit multiplication.
                 else if (tokens[end] is SymbolToken || tokens[end] is NumberToken)
                 {
+                    // Parse next sub-expression and add it to either numerator or denominator
+                    // based on whether the last operation was multiplication or division.
                     Expression nextPart = ParseExponent(tokens, end, out int nextLen);
                     (lastWasDivision ? denominatorParts : numeratorParts).Add(nextPart);
                     end += nextLen;
                 }
+                // End of multiplication.
                 else
                 {
                     break;
                 }
             }
 
+            // Calculate number of tokens used.
             length = end - start;
 
-            return FractionExpression.Build(
-                MultiplicationExpression.Build(numeratorParts),
-                MultiplicationExpression.Build(denominatorParts)
-            );
+            // If the denominator is empty, build multiplication from the numerator parts.
+            if (denominatorParts.Count == 0)
+            {
+                return MultiplicationExpression.Build(numeratorParts);
+            }
+            // If there is at least one sub-expression in the denominator, build a fraction.
+            else
+            {
+                return FractionExpression.Build(
+                    MultiplicationExpression.Build(numeratorParts),
+                    MultiplicationExpression.Build(denominatorParts)
+                );
+            }
         }
 
         /// <summary>
