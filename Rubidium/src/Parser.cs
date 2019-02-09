@@ -111,7 +111,7 @@ namespace Rubidium
                     end += 1 + nextLen;
                     lastWasDivision = special.Division;
                 }
-                else if (tokens[end] is SymbolToken || tokens[end] is IntegerToken)
+                else if (tokens[end] is SymbolToken || tokens[end] is NumberToken)
                 {
                     Expression nextPart = ParseExponent(tokens, end, out int nextLen);
                     (lastWasDivision ? denominatorParts : numeratorParts).Add(nextPart);
@@ -152,10 +152,10 @@ namespace Rubidium
         {
             Token first = tokens[start];
 
-            if (first is IntegerToken integer)
+            if (first is NumberToken number)
             {
                 length = 1;
-                return (Fraction)integer.IntegerValue;
+                return number.NumericValue;
             }
             else if (first is SymbolToken symbol)
             {
