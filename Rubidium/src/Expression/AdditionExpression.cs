@@ -58,6 +58,10 @@ namespace Rubidium
                 {
                     variableCoefficients[variable.Name] = (variableCoefficients.GetValueOrDefault(variable.Name) ?? Fraction.Zero) + Fraction.One;
                 }
+                else if (expr is NegatedExpression negated && negated.Expression is VariableExpression negatedVariable)
+                {
+                    variableCoefficients[negatedVariable.Name] = (variableCoefficients.GetValueOrDefault(negatedVariable.Name) ?? Fraction.Zero) + Fraction.NegativeOne;
+                }
                 else if (expr is MultiplicationExpression multiplication && multiplication.IsVariableWithCoefficient)
                 {
                     variableCoefficients[multiplication.VariableName] = (variableCoefficients.GetValueOrDefault(multiplication.VariableName) ?? Fraction.Zero) + multiplication.Coefficient;
