@@ -186,42 +186,5 @@ namespace Rubidium
 
             throw new Exception($"Unexpected token \"{tokens[start].StringValue}\" at index {tokens[start].Index}");
         }
-
-        private static bool IsOperationToken(Token token, out Operation op)
-        {
-            op = default(Operation);
-
-            if (token is SpecialToken special)
-            {
-                if (special.Addition)
-                {
-                    op = Operation.Addition;
-                }
-                else if (special.Subtraction)
-                {
-                    op = Operation.Subtraction;
-                }
-                else if (special.Multiplication)
-                {
-                    op = Operation.Multiplication;
-                }
-                else if (special.Division)
-                {
-                    op = Operation.Division;
-                }
-                else if (special.Power)
-                {
-                    op = Operation.Power;
-                }
-                else
-                {
-                    return false;
-                }
-
-                return true;
-            }
-
-            return false;
-        }
     }
 }
