@@ -4,18 +4,29 @@ using System.Linq;
 
 namespace Rubidium
 {
+    /// <summary>
+    /// Class used for parsing statements out of tokens.
+    /// </summary>
     public static class Parser
     {
+        /// <summary>
+        /// Parses a list of statements out of a list of tokens.
+        /// </summary>
+        /// <param name="tokens">Input list of tokens to parse.</param>
+        /// <returns>Returns list of parsed statements.</returns>
         public static List<Statement> ParseStatements(List<Token> tokens)
         {
             List<Statement> statements = new List<Statement>();
 
             int index = 0;
 
+            // Keep parsing while there are tokens left.
             while (index < tokens.Count)
             {
                 List<Token> statementTokens = new List<Token>();
 
+                // Get a list of all tokens that are part of this statement.
+                // Statements are separated / terminated using a statement terminator.
                 while (index < tokens.Count)
                 {
                     if (tokens[index] is SpecialToken special && special.Terminator)
@@ -27,6 +38,8 @@ namespace Rubidium
                     statementTokens.Add(tokens[index++]);
                 }
 
+                // Unless there are no tokens between the last and the next statement terminator,
+                // parse a statement out of the tokens.
                 if (statementTokens.Count > 0)
                 {
                     statements.Add(ParseStatement(statementTokens));
@@ -36,8 +49,18 @@ namespace Rubidium
             return statements;
         }
 
+        /// <summary>
+        /// Parse a single statement out of the given list of tokens.
+        /// If a statement cannot be parser or if there are unused tokens left,
+        /// an exception will be thrown.
+        /// Currently, each statement should be in the form of an equation.
+        /// Therefore, if the equality token is missing, an excepion will be thrown.
+        /// </summary>
+        /// <param name="tokens">Input list of tokens to be used for the statement.</param>
+        /// <returns>Returns the parsed statement.</returns>
         private static Statement ParseStatement(List<Token> tokens)
         {
+            // Find index of the equality token.
             int equalityIndex = -1;
 
             for (int i = 0; i < tokens.Count; i++)
@@ -60,9 +83,11 @@ namespace Rubidium
                 throw new Exception("Invalid statement - no equality token");
             }
 
+            // Parse both sides of the statement / equation.
             Expression left = ParseAddition(tokens.GetRange(0, equalityIndex), 0, out int leftLen);
             Expression right = ParseAddition(tokens, equalityIndex + 1, out int rightLen);
 
+            // Make sure there are no unused tokens left.
             if (leftLen + 1 + rightLen != tokens.Count)
             {
                 throw new Exception($"Unable to parse statement beginning at index {tokens[0].Index}");
