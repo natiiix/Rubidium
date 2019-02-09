@@ -18,7 +18,7 @@ namespace Rubidium
             return tokens;
         }
 
-        public static Token ParseToken(string str, ref int index)
+        private static Token ParseToken(string str, ref int index)
         {
             char first = str[index];
 
@@ -30,13 +30,15 @@ namespace Rubidium
             else if (char.IsDigit(first))
             {
                 int length = 1;
+                bool decimalSeparator = false;
 
-                while (index + length < str.Length && char.IsDigit(str[index + length]))
+                while (index + length < str.Length && (char.IsDigit(str[index + length]) ||
+                    (!decimalSeparator && (decimalSeparator = str[index + length] == Fraction.DecimalSeparator))))
                 {
                     length++;
                 }
 
-                IntegerToken token = new IntegerToken(str.Substring(index, length), index);
+                NumberToken token = new NumberToken(str.Substring(index, length), index);
                 index += length;
                 return token;
             }
