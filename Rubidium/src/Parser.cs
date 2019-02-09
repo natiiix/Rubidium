@@ -107,20 +107,29 @@ namespace Rubidium
         /// <returns>Returns the parsed expression.</returns>
         private static Expression ParseAddition(List<Token> tokens, int start, out int length)
         {
-            List<Expression> parts = new List<Expression>();
+            // Create list for expressions belonging to this addition.
+            List<Expression> parts = new List<Expression>()
+            {
+                // Read the first part / sub-expression of the addition.
+                ParseMultiplication(tokens, start, out int firstLen)
+            };
 
-            Expression firstPart = ParseMultiplication(tokens, start, out int firstLen);
-            parts.Add(firstPart);
-
+            // Index of last processed token's end.
             int end = start + firstLen;
 
+            // Keep going while sub-expressions are being added (or subtracted)
+            // and while there are more tokens to process.
             while (end < tokens.Count && tokens[end] is SpecialToken special && (special.Addition || special.Subtraction))
             {
+                // Parse next part / sub-expression of the addition.
                 Expression nextPart = ParseMultiplication(tokens, end + 1, out int nextLen);
+                // Convert subtraction into addition of negated expression.
                 parts.Add(special.Subtraction ? NegatedExpression.Build(nextPart) : nextPart);
+                // Add the length of the operator and the sub-expression to the end token index.
                 end += 1 + nextLen;
             }
 
+            // Calculate the total length of the addition.
             length = end - start;
             return AdditionExpression.Build(parts);
         }
