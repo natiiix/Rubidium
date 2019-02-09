@@ -114,7 +114,7 @@ namespace Rubidium
             }
 
             value = new Fraction(numerator, BigInteger.Pow(10, decimalDigits));
-            return false;
+            return true;
         }
 
         public static Fraction Parse(string str) =>
