@@ -30,20 +30,37 @@ namespace Rubidium
             List<Expression> variableParts = new List<Expression>();
             Dictionary<string, Fraction> variableCoefficients = new Dictionary<string, Fraction>();
 
+            if (expressions.Any(x => x is AdditionExpression))
+            {
+                foreach (Expression expr in expressions)
+                {
+                    if (expr is AdditionExpression addition)
+                    {
+                        constantPart += addition.Constant;
+                        variableParts.AddRange(addition.VariableParts);
+                    }
+                    else
+                    {
+                        variableParts.Add(expr);
+                    }
+                }
+
+                return Build(constantPart, variableParts);
+            }
+
             foreach (Expression expr in expressions)
             {
                 if (expr is ConstantExpression constant)
                 {
                     constantPart += constant;
                 }
-                else if (expr is AdditionExpression addition)
-                {
-                    constantPart += addition.Constant;
-                    variableParts.AddRange(addition.VariableParts);
-                }
                 else if (expr is VariableExpression variable)
                 {
                     variableCoefficients[variable.Name] = (variableCoefficients.GetValueOrDefault(variable.Name) ?? Fraction.Zero) + Fraction.One;
+                }
+                else if (expr is NegatedExpression negated && negated.Expression is VariableExpression negatedVariable)
+                {
+                    variableCoefficients[negatedVariable.Name] = (variableCoefficients.GetValueOrDefault(negatedVariable.Name) ?? Fraction.Zero) + Fraction.NegativeOne;
                 }
                 else if (expr is MultiplicationExpression multiplication && multiplication.IsVariableWithCoefficient)
                 {
