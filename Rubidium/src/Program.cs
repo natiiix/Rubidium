@@ -13,36 +13,49 @@ namespace Rubidium
         {
             Context context = null;
 
+            // If the query has be supplied through command line arguments.
             if (args.Length > 0)
             {
-                context = new Context(Parser.ParseStatements(
-                    Lexer.Tokenize(string.Join(';', args))
-                ));
+                // Tokenize query, parse tokens into statements and build Context from statements.
+                context = new Context(
+                    Parser.ParseStatements(
+                        Lexer.Tokenize(string.Join(';', args))
+                    )
+                );
             }
+            // Otherwise, if there are no command line arguments.
             else
             {
                 List<Statement> statements = new List<Statement>();
 
+                // Let the user type all their statements one by one via Console / stdin.
                 while (true)
                 {
+                    // Prompt user to enter another statement.
                     Console.Write("Enter statement (leave empty to finish): ");
                     string line = Console.ReadLine();
 
+                    // Stop once the user enters an empty line.
                     if (string.IsNullOrEmpty(line))
                     {
                         break;
                     }
 
-                    statements.AddRange(Parser.ParseStatements(
-                        Lexer.Tokenize(line)
-                    ));
+                    // Tokenize query, parse tokens into statement and add statement to list.
+                    statements.AddRange(
+                        Parser.ParseStatements(
+                            Lexer.Tokenize(line)
+                        )
+                    );
                 }
 
+                // Build a Context from the statements.
                 context = new Context(statements);
             }
 
             Console.WriteLine($"-- Initial context state --{Environment.NewLine}{context}{Environment.NewLine}");
 
+            // Keep trying to find new statements until it is no longer possible.
             while (context.FindNewStatements()) ;
 
             Console.WriteLine($"-- Final context state --{Environment.NewLine}{context}");
