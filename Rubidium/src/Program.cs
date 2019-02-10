@@ -59,7 +59,7 @@ namespace Rubidium
             Console.WriteLine($"-- Initial context state --{Environment.NewLine}{context}{Environment.NewLine}");
 
             // Keep trying to find new statements until it is no longer possible.
-            while (context.FindNewStatements()) ;
+            while (context.PerformIteration()) ;
 
             Console.WriteLine($"-- Final context state --{Environment.NewLine}{context}");
         }
@@ -76,7 +76,7 @@ namespace Rubidium
             List<Statement> statements = Parser.ParseStatements(tokens);
             Context context = new Context(statements, false);
 
-            while (context.FindNewStatements()) ;
+            while (context.PerformIteration()) ;
 
             return context;
         }
