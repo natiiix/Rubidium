@@ -59,6 +59,16 @@ namespace Rubidium
             VariableValues = new Dictionary<string, Fraction>();
         }
 
+        /// <summary>
+        /// Performs a single iteration of statement optimization / simplification.
+        /// Attempts to express as many variables as possible. Variables can be expressed
+        /// using an expression (which means it depends on other variables) or as a constant value.
+        /// When a variable is successully expressed, it will be substituted
+        /// for its expression / value in other statements and expressions.
+        /// </summary>
+        /// <returns>Return boolean value indicating if any progress has been made in the iteration.
+        /// If no progress has been made in an iteration, it is fair to assume that
+        /// no progress would be made in any number of further iterations.</returns>
         public bool PerformIteration()
         {
             int newVariablesValues = 0;
