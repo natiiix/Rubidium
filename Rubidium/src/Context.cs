@@ -83,52 +83,75 @@ namespace Rubidium
             // Iterate through all available statements.
             foreach (Statement s in Statements)
             {
+                // Left side is constant.
                 if (!s.Left.ContainsVariables)
                 {
+                    // Right side is variable.
                     if (s.Right.ContainsVariables)
                     {
+                        // Swap left and right side of statement
+                        // to move variables to the left side
+                        // and constants to the right side.
                         newStatements.Add(s.SwappedSides);
                     }
+                    // Both sides of statement are constant.
                     else
                     {
+                        // Evaluate the statement. Determine if both sides are equal and print the result.
+                        // Then throw the statement away, because it will not be useful for anything else.
                         PrintIfVerbose($"{s} : {(s.Left - s.Right) is ConstantExpression constant && constant.Value.IsZero}");
                     }
                 }
+                // If the statement contains any variable, which can be substituted,
+                // substitute variables with their expressions or constant values.
                 else if (s.Variables.Any(x => VariableValues.ContainsKey(x) || VariableExpressions.ContainsKey(x)))
                 {
                     newStatements.Add(s.SubstituteVariables(VariableValues, VariableExpressions));
                 }
+                // Left side is a lone variable, which can be expressed and
+                // if the right side is suitable for expressing the left-side variable.
                 else if (s.Left is VariableExpression leftVariable &&
                     IsVariableExpressionRightSide(s.Right, leftVariable.Name))
                 {
                     VariableExpressions[leftVariable.Name] = s.Right;
                 }
+                // Right side is a lone variable, swap sides of statement.
                 else if (s.Right is VariableExpression rightVariable)
                 {
                     newStatements.Add(s.SwappedSides);
                 }
+                // Left side is a single variable with a const coefficient,
+                // the variable can be expressed and the right side of statement
+                // is suitable for expression of this variable.
                 else if (s.Left is MultiplicationExpression leftMultiplication &&
                     leftMultiplication.IsVariableWithCoefficient &&
                     IsVariableExpressionRightSide(s.Right, leftMultiplication.VariableName))
                 {
                     VariableExpressions[leftMultiplication.VariableName] = s.Right / leftMultiplication.Coefficient;
                 }
+                // Left side is an addition, right side is either an addition or left side contains a constant or
+                // one of the variable parts of the left-side addition can be used to express a free variable.
                 else if (s.Left is AdditionExpression leftAddition &&
                     (s.Right is AdditionExpression || !leftAddition.Constant.IsZero || leftAddition.VariableParts.Any(x => IsVariableExpressionLeftSide(x, expressedVariables))))
                 {
+                    // Right side is also an addition.
                     if (s.Right is AdditionExpression rightAddition)
                     {
+                        // Aggregate the constant and variable parts of both additions together.
                         Fraction constant = rightAddition.Constant - leftAddition.Constant;
                         List<Expression> variableParts = new List<Expression>();
 
                         variableParts.AddRange(leftAddition.VariableParts);
                         variableParts.AddRange(rightAddition.VariableParts.Select(x => -x));
 
+                        // Create a new statement with the variable parts on the left side
+                        // and the constant expression on the right side.
                         newStatements.Add(new Statement(
                             AdditionExpression.Build(variableParts),
                             constant
                         ));
                     }
+                    // Left-side addition contains a constant.
                     else if (!leftAddition.Constant.IsZero)
                     {
                         newStatements.Add(new Statement(
@@ -136,38 +159,52 @@ namespace Rubidium
                             s.Right - leftAddition.Constant
                         ));
                     }
+                    // Otherwise (if a variable from the left-side addition can be expressed).
                     else
                     {
+                        // Get the first variable expression, from which a variable can be expressed.
                         Expression usableVar = leftAddition.VariableParts.Find(x => IsVariableExpressionLeftSide(x, expressedVariables));
 
+                        // Move the expression to the left side and the remainder
+                        // of the left-side addition to the right side of the statement.
                         newStatements.Add(new Statement(
                             usableVar,
                             s.Right - AdditionExpression.Build(leftAddition.Constant, leftAddition.VariableParts.Where(x => x != usableVar))
                         ));
 
+                        // Add the expressed variable to a list of variables expressed in this iteration.
+                        // Even though the variable has not really been expressed yet.
+                        // It has just been prepared for being expressed in the next iteration.
                         expressedVariables.Add(usableVar is VariableExpression varExpr ?
                             varExpr.Name :
                             (usableVar as MultiplicationExpression).VariableName
                         );
                     }
                 }
+                // Right side is variable.
                 else if (s.Right.ContainsVariables)
                 {
+                    // Right side is an addition.
                     if (s.Right is AdditionExpression rightAddition)
                     {
+                        // Move variable parts from right side to left side.
                         newStatements.Add(new Statement(
                             s.Left - AdditionExpression.Build(rightAddition.VariableParts),
                             rightAddition.Constant
                         ));
                     }
+                    // Right side is not an addition.
                     else
                     {
+                        // Move the whole right side of statement to the left side.
                         newStatements.Add(new Statement(
                             s.Left - s.Right,
                             ConstantExpression.Zero
                         ));
                     }
                 }
+                // Any other type of a statement. Keep the statement because
+                // it may become useful later when more variables are substitured.
                 else
                 {
                     keepStatements.Add(s);
