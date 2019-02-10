@@ -71,11 +71,16 @@ namespace Rubidium
         /// no progress would be made in any number of further iterations.</returns>
         public bool PerformIteration()
         {
+            // Number of variables bound to a constant value in this iteration.
             int newVariablesValues = 0;
+            // Statements to be kept untouched.
             List<Statement> keepStatements = new List<Statement>();
+            // New statements created in this iteration.
             List<Statement> newStatements = new List<Statement>();
+            // List of names of variables, which have been expressed in this iteration.
             List<string> expressedVariables = new List<string>();
 
+            // Iterate through all available statements.
             foreach (Statement s in Statements)
             {
                 if (!s.Left.ContainsVariables)
@@ -169,24 +174,33 @@ namespace Rubidium
                 }
             }
 
+            // Create a temporary dictionary for new variable expressions.
             Dictionary<string, Expression> newVarExpressions = new Dictionary<string, Expression>();
 
+            // Iterate through existing / old variable expressions.
             foreach (var varExpr in VariableExpressions)
             {
+                // Variables bound to constant expressions can be turned
+                // into variables bound to a constant value.
                 if (varExpr.Value is ConstantExpression constant)
                 {
                     VariableValues[varExpr.Key] = constant;
                     newVariablesValues++;
                 }
+                // All other kinds of expressions.
                 else
                 {
+                    // Substitute variables in the expression.
                     Expression newExpr = varExpr.Value.SubstituteVariables(VariableValues, VariableExpressions);
 
+                    // If the resulting expression is a constant expression,
+                    // bind the variable to the constant value.
                     if (newExpr is ConstantExpression newConstant)
                     {
                         VariableValues[varExpr.Key] = newConstant;
                         newVariablesValues++;
                     }
+                    // Otherwise just bind the variable to the new expression.
                     else
                     {
                         newVarExpressions[varExpr.Key] = newExpr;
@@ -194,12 +208,15 @@ namespace Rubidium
                 }
             }
 
+            // Replace old statements with statements to be kept and newly created statements.
             Statements.Clear();
             Statements.AddRange(keepStatements);
             Statements.AddRange(newStatements);
 
+            // Clear old variable expression dictionary.
             VariableExpressions.Clear();
 
+            // If there are any new statements or variable expressions, print them.
             if (newStatements.Count > 0 || newVarExpressions.Count > 0)
             {
                 foreach (Statement s in newStatements)
@@ -209,6 +226,7 @@ namespace Rubidium
 
                 foreach (var varExpr in newVarExpressions)
                 {
+                    // Copy the new variable expressions to the persistent variable expression dictionary.
                     VariableExpressions[varExpr.Key] = varExpr.Value;
                     PrintIfVerbose($"{varExpr.Key} = " + varExpr.Value.ToString().StripParentheses());
                 }
@@ -216,6 +234,14 @@ namespace Rubidium
                 PrintIfVerbose("--------------------------------");
             }
 
+            // FIXME: False will be returned if a variable in a variable expression has been substituted by another variable expression.
+            // In such case, progress has been made, however it will remain underected and the outer loop will break.
+            // This is due to the fact that there is currently no way to determine if two expression are equal.
+            // Therefore it is impossible to tell if the variable expression has been simplified / optimized in any way in the iteration.
+
+            // Progress has been made if there is at least one new statement or new expressed variable.
+            // If all variables have been already expressed, but there are no statements or variable expressions left,
+            // there is no need to keep going because no further progress can ever be made.
             return (newStatements.Count > 0 || (newVariablesValues > 0 && (keepStatements.Count > 0 || newVarExpressions.Count > 0)));
         }
 
