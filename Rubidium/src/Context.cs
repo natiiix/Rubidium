@@ -59,7 +59,7 @@ namespace Rubidium
             VariableValues = new Dictionary<string, Fraction>();
         }
 
-        public bool FindNewStatements()
+        public bool PerformIteration()
         {
             int newVariablesValues = 0;
             List<Statement> keepStatements = new List<Statement>();
