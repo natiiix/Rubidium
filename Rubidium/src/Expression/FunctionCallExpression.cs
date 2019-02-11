@@ -36,6 +36,11 @@ namespace Rubidium
 
         private static ConstantExpression CallFunction(string name, List<ConstantExpression> args)
         {
+            if (name == "abs" && args.Count == 1)
+            {
+                return args[0].Value.AbsoluteValue;
+            }
+
             throw new NotImplementedException($"Function call not implemented: function \"{name}\" with {args.Count} arguments");
         }
 
