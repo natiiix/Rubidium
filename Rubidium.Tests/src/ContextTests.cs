@@ -62,5 +62,18 @@ namespace Rubidium.Tests
             Assert.Equal(6, c.VariableValues["x1"]);
             Assert.Equal(-2, c.VariableValues["x2"]);
         }
+
+        [Fact]
+        public static void TestFunctionCallSingleArg()
+        {
+            Context c = Program.Evaluate("x = abs(-42)");
+
+            Assert.Empty(c.Statements);
+            Assert.Empty(c.VariableExpressions);
+
+            Assert.Single(c.VariableValues);
+            Assert.True(c.VariableValues.ContainsKey("x"));
+            Assert.Equal(42, c.VariableValues["x"]);
+        }
     }
 }
