@@ -36,14 +36,17 @@ namespace Rubidium
 
         private static ConstantExpression CallFunction(string name, List<ConstantExpression> args)
         {
+            // abs(x): Returns absolute value of argument.
             if (name == "abs" && args.Count == 1)
             {
                 return args[0].Value.AbsoluteValue;
             }
+            // min(x[, ...]): Returns argument with the lowest value.
             else if (name == "min" && args.Count > 0)
             {
                 return args.Min(x => x.Value);
             }
+            // max(x[, ...]): Returns argument with the greatest value.
             else if (name == "max" && args.Count > 0)
             {
                 return args.Max(x => x.Value);
