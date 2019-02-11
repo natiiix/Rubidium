@@ -26,7 +26,7 @@ namespace Rubidium
                 return new FunctionCallExpression(funcName, args.ToList());
             }
 
-            throw new NotImplementedException("Function call not implemented");
+            throw new NotImplementedException($"Function call not implemented: function \"{funcName}\" with {args.Count} arguments");
         }
 
         public override Expression SubstituteVariables(Dictionary<string, Fraction> variableValues, Dictionary<string, Expression> variableExpressions) =>
