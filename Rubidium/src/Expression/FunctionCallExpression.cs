@@ -40,6 +40,14 @@ namespace Rubidium
             {
                 return args[0].Value.AbsoluteValue;
             }
+            else if (name == "min" && args.Count > 0)
+            {
+                return args.Min(x => x.Value);
+            }
+            else if (name == "max" && args.Count > 0)
+            {
+                return args.Max(x => x.Value);
+            }
 
             throw new NotImplementedException($"Function call not implemented: function \"{name}\" with {args.Count} arguments");
         }
