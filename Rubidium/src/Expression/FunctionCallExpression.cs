@@ -21,12 +21,22 @@ namespace Rubidium
 
         public static Expression Build(string funcName, List<Expression> args)
         {
-            if (args.Any(x => x.ContainsVariables))
+            // If all the arguments are constant expressions,
+            // call the function with the given arguments.
+            if (args.All(x => x is ConstantExpression))
+            {
+                return CallFunction(funcName, args.Select(x => x as ConstantExpression).ToList());
+            }
+            // Otherwise construct a function call expression and wait for the arguments to be evaluated.
+            else
             {
                 return new FunctionCallExpression(funcName, args.ToList());
             }
+        }
 
-            throw new NotImplementedException($"Function call not implemented: function \"{funcName}\" with {args.Count} arguments");
+        private static ConstantExpression CallFunction(string name, List<ConstantExpression> args)
+        {
+            throw new NotImplementedException($"Function call not implemented: function \"{name}\" with {args.Count} arguments");
         }
 
         public override Expression SubstituteVariables(Dictionary<string, Fraction> variableValues, Dictionary<string, Expression> variableExpressions) =>
