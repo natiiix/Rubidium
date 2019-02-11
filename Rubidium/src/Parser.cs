@@ -256,11 +256,49 @@ namespace Rubidium
                 return number.NumericValue;
             }
             // Symbol token.
-            // Return a variable expression.
-            else if (first is SymbolToken symbol)
+            else if (first is SymbolToken)
             {
-                length = 1;
-                return new VariableExpression(symbol.StringValue);
+                // If the symbol token is followed by a left parenthesis.
+                // Parse and return a function call expression.
+                if (tokens.Count > start + 1 && tokens[start + 1] is SpecialToken next && next.LeftParenthesis)
+                {
+                    List<Expression> args = new List<Expression>();
+                    int end = start + 1;
+
+                    // Parse individual function call arguments.
+                    while (true)
+                    {
+                        // Parse the argument expression and add it to the list of arguments.
+                        args.Add(ParseAddition(tokens, end + 1, out int argLen));
+                        end += 1 + argLen;
+
+                        if (end < tokens.Count && tokens[end] is SpecialToken endSpecial)
+                        {
+                            // End of function call expression.
+                            if (endSpecial.RightParenthesis)
+                            {
+                                break;
+                            }
+                            // Function call argument separator indicates there is going to be another argument.
+                            else if (endSpecial.ArgumentSeparator)
+                            {
+                                continue;
+                            }
+                        }
+
+                        // No other kind of token is valid at this point.
+                        throw new Exception($"Unexpected end of function call expression beginning at index {first.Index}");
+                    }
+
+                    length = end + 1 - start;
+                    return FunctionCallExpression.Build(first.StringValue, args);
+                }
+                // Otherwise, return a variable expression.
+                else
+                {
+                    length = 1;
+                    return new VariableExpression(first.StringValue);
+                }
             }
             // Special token.
             else if (first is SpecialToken firstSpecial)
@@ -281,7 +319,7 @@ namespace Rubidium
 
                     if (!(tokens[start + 1 + exprLen] is SpecialToken endSpecial && endSpecial.RightParenthesis))
                     {
-                        throw new Exception($"Unexpected end of parenthesis expression");
+                        throw new Exception($"Unexpected end of parenthesis expression beginning at index {first.Index}");
                     }
 
                     length = exprLen + 2;

@@ -7,6 +7,7 @@ namespace Rubidium
     public class SpecialToken : Token
     {
         public bool Terminator => StringValue == ";";
+        public bool ArgumentSeparator => StringValue == ",";
         public bool Equality => StringValue == "=";
         public bool LeftParenthesis => StringValue == "(";
         public bool RightParenthesis => StringValue == ")";
