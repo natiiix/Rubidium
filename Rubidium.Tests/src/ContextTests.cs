@@ -88,5 +88,22 @@ namespace Rubidium.Tests
             Assert.True(c.VariableValues.ContainsKey("x"));
             Assert.Equal(42, c.VariableValues["x"]);
         }
+
+        [Fact]
+        public static void TestFunctionCallSqrt()
+        {
+            Context c = Program.Evaluate("x = sqrt(65536); y = sqrt(0.01)");
+
+            Assert.Empty(c.Statements);
+            Assert.Empty(c.VariableExpressions);
+
+            Assert.Equal(2, c.VariableValues.Count);
+
+            Assert.True(c.VariableValues.ContainsKey("x"));
+            Assert.Equal(256, c.VariableValues["x"]);
+
+            Assert.True(c.VariableValues.ContainsKey("y"));
+            Assert.Equal((Fraction)0.1, c.VariableValues["y"]);
+        }
     }
 }
