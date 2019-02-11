@@ -41,6 +41,11 @@ namespace Rubidium
             {
                 return args[0].Value.AbsoluteValue;
             }
+            // sqrt(x): Returns square root of argument.
+            else if (name == "sqrt" && args.Count == 1)
+            {
+                return args[0].Value.SquareRoot;
+            }
             // min(x[, ...]): Returns argument with the lowest value.
             else if (name == "min" && args.Count > 0)
             {
