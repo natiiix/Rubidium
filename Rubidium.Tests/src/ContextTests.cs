@@ -75,5 +75,18 @@ namespace Rubidium.Tests
             Assert.True(c.VariableValues.ContainsKey("x"));
             Assert.Equal(42, c.VariableValues["x"]);
         }
+
+        [Fact]
+        public static void TestFunctionCallMultiArg()
+        {
+            Context c = Program.Evaluate("x = max(10, -20, 42, -785)");
+
+            Assert.Empty(c.Statements);
+            Assert.Empty(c.VariableExpressions);
+
+            Assert.Single(c.VariableValues);
+            Assert.True(c.VariableValues.ContainsKey("x"));
+            Assert.Equal(42, c.VariableValues["x"]);
+        }
     }
 }
