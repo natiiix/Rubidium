@@ -41,6 +41,11 @@ namespace Rubidium
             {
                 return (Fraction)Math.PI;
             }
+            // e(): Returns approximate value of E converted to Fraction.
+            else if (name == "e" && args.Count == 0)
+            {
+                return (Fraction)Math.E;
+            }
             // abs(x): Returns absolute value of argument.
             else if (name == "abs" && args.Count == 1)
             {
