@@ -180,6 +180,24 @@ namespace Rubidium
         /// <returns>Returns the mean value of given values.</returns>
         public static Fraction Mean(IEnumerable<Fraction> values) => Sum(values) / values.Count();
 
+        /// <summary>
+        /// Finds the median of given values.
+        /// </summary>
+        /// <param name="values">Values to find the median value of.</param>
+        /// <returns>Returns the median of given values.</returns>
+        public static Fraction Median(IEnumerable<Fraction> values)
+        {
+            int count = values.Count();
+            int countHalf = count / 2;
+
+            List<Fraction> ordered = new List<Fraction>(values);
+            ordered.Sort();
+
+            return count % 2 == 1 ?
+                ordered[countHalf] :
+                (ordered[countHalf - 1] + ordered[countHalf]).Half;
+        }
+
         public int CompareTo(Fraction other) => (this - other).Numerator.Sign;
 
         public override bool Equals(object obj) => obj is Fraction f && f.Numerator == Numerator && f.Denominator == Denominator;
