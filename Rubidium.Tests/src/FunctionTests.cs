@@ -7,7 +7,7 @@ namespace Rubidium.Tests
     public static class FunctionTests
     {
         [Fact]
-        public static void TestFunctionCallSingleArg()
+        public static void TestFunctionAbs()
         {
             Context c = Program.Evaluate("x = abs(-42)");
 
@@ -20,7 +20,7 @@ namespace Rubidium.Tests
         }
 
         [Fact]
-        public static void TestFunctionCallMultiArg()
+        public static void TestFunctionMax()
         {
             Context c = Program.Evaluate("x = max(10, -20, 42, -785)");
 
@@ -33,7 +33,7 @@ namespace Rubidium.Tests
         }
 
         [Fact]
-        public static void TestFunctionCallSqrt()
+        public static void TestFunctionSqrt()
         {
             Context c = Program.Evaluate("x = sqrt(65536); y = sqrt(0.01)");
 
