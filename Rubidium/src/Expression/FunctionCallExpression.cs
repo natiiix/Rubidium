@@ -71,6 +71,11 @@ namespace Rubidium
             {
                 return args[0].Value.CallFunction(Math.Log);
             }
+            // log10(x): Returns logarithm with base 10 of argument.
+            else if (name == "log10" && args.Count == 1)
+            {
+                return args[0].Value.CallFunction(Math.Log10);
+            }
             // min(x[, ...]): Returns argument with the lowest value.
             else if (name == "min" && args.Count > 0)
             {
