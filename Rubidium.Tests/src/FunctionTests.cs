@@ -7,6 +7,32 @@ namespace Rubidium.Tests
     public static class FunctionTests
     {
         [Fact]
+        public static void TestNonConstantCall()
+        {
+            Context c = Program.Evaluate("4x = 2 - 2y; 2 = 8x - 4y; max = max(x, y + 1/2); min = min(x - 3/4, y); sum = sum(x * 2, y / 2); avg = avg(x^2, y^-2)");
+
+            Assert.Equal(6, c.VariableValues.Count);
+
+            Assert.True(c.VariableValues.ContainsKey("x"));
+            Assert.Equal(new Fraction(3, 8), c.VariableValues["x"]);
+
+            Assert.True(c.VariableValues.ContainsKey("y"));
+            Assert.Equal(new Fraction(1, 4), c.VariableValues["y"]);
+
+            Assert.True(c.VariableValues.ContainsKey("max"));
+            Assert.Equal(new Fraction(3, 4), c.VariableValues["max"]);
+
+            Assert.True(c.VariableValues.ContainsKey("min"));
+            Assert.Equal(new Fraction(-3, 8), c.VariableValues["min"]);
+
+            Assert.True(c.VariableValues.ContainsKey("sum"));
+            Assert.Equal(new Fraction(7, 8), c.VariableValues["sum"]);
+
+            Assert.True(c.VariableValues.ContainsKey("avg"));
+            Assert.Equal(new Fraction(1033, 128), c.VariableValues["avg"]);
+        }
+
+        [Fact]
         public static void TestFunctionAbs()
         {
             Context c = Program.Evaluate("x = abs(-42); y = abs(12.34)");
