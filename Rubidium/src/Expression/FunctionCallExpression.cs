@@ -61,6 +61,11 @@ namespace Rubidium
             {
                 return Fraction.Sum(args.Select(x => x.Value));
             }
+            // avg(x[, ...]): Returns average value of arguments.
+            else if (name == "avg" && args.Count > 0)
+            {
+                return Fraction.Average(args.Select(x => x.Value));
+            }
 
             throw new NotImplementedException($"Function call not implemented: function \"{name}\" with {args.Count} arguments");
         }
