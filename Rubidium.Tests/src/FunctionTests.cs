@@ -156,5 +156,31 @@ namespace Rubidium.Tests
             Assert.True(c.VariableValues.ContainsKey("y"));
             Assert.Equal(5, c.VariableValues["y"]);
         }
+
+        [Fact]
+        public static void TestSin()
+        {
+            Context c = Program.Evaluate("x = sin(0); y = sin(pi()); z = sin(2pi()); v = sin(pi() / 2); w = sin(pi() * 3 / 2)");
+
+            Assert.Empty(c.Statements);
+            Assert.Empty(c.VariableExpressions);
+
+            Assert.Equal(5, c.VariableValues.Count);
+
+            Assert.True(c.VariableValues.ContainsKey("x"));
+            Assert.Equal(Fraction.Zero, c.VariableValues["x"]);
+
+            Assert.True(c.VariableValues.ContainsKey("y"));
+            Assert.True(c.VariableValues["y"].ApproximatelyEqual(Fraction.Zero));
+
+            Assert.True(c.VariableValues.ContainsKey("z"));
+            Assert.True(c.VariableValues["z"].ApproximatelyEqual(Fraction.Zero));
+
+            Assert.True(c.VariableValues.ContainsKey("v"));
+            Assert.True(c.VariableValues["v"].ApproximatelyEqual(Fraction.One));
+
+            Assert.True(c.VariableValues.ContainsKey("w"));
+            Assert.True(c.VariableValues["w"].ApproximatelyEqual(Fraction.NegativeOne));
+        }
     }
 }
