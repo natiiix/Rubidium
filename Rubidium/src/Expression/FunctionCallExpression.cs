@@ -36,8 +36,13 @@ namespace Rubidium
 
         private static ConstantExpression CallFunction(string name, List<ConstantExpression> args)
         {
+            // pi(): Returns approximate value of PI converted to Fraction.
+            if (name == "pi" && args.Count == 0)
+            {
+                return (Fraction)Math.PI;
+            }
             // abs(x): Returns absolute value of argument.
-            if (name == "abs" && args.Count == 1)
+            else if (name == "abs" && args.Count == 1)
             {
                 return args[0].Value.AbsoluteValue;
             }
