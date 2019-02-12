@@ -57,7 +57,7 @@ namespace Rubidium
                 return args.Max(x => x.Value);
             }
             // sum([...]): Returns sum of arguments.
-            else if (name == "sum" && args.Count > 0)
+            else if (name == "sum")
             {
                 return Fraction.Sum(args.Select(x => x.Value));
             }
