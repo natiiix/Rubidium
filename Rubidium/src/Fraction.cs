@@ -49,6 +49,14 @@ namespace Rubidium
         public Fraction(int numerator, int denominator = 1) : this((BigInteger)numerator, (BigInteger)denominator) { }
 
         /// <summary>
+        /// Calls a function with this Fraction converted to double as its argument
+        /// and converts its return value from double to Fraction, which is then returned.
+        /// </summary>
+        /// <param name="callback">Function to call.</param>
+        /// <returns>Returns value returned by callback function converted to Fraction.</returns>
+        public Fraction CallFunction(Func<double, double> callback) => (Fraction)callback((double)this);
+
+        /// <summary>
         /// Normalizes the Fraction to make it easier to work with.
         /// Denominator must always be positive.
         /// Numerator and denominator must not have a common divisor greater than 1.
