@@ -139,5 +139,22 @@ namespace Rubidium.Tests
             Assert.True(c.VariableValues.ContainsKey("z"));
             Assert.Equal((Fraction)42.42, c.VariableValues["z"]);
         }
+
+        [Fact]
+        public static void TestFunctionMedian()
+        {
+            Context c = Program.Evaluate("x = median(-20, -10, 0, 0.0, 10, 20, 30); y = median(-20, -10, 0.0, 10, 20, 30);");
+
+            Assert.Empty(c.Statements);
+            Assert.Empty(c.VariableExpressions);
+
+            Assert.Equal(2, c.VariableValues.Count);
+
+            Assert.True(c.VariableValues.ContainsKey("x"));
+            Assert.Equal(Fraction.Zero, c.VariableValues["x"]);
+
+            Assert.True(c.VariableValues.ContainsKey("y"));
+            Assert.Equal(5, c.VariableValues["y"]);
+        }
     }
 }
