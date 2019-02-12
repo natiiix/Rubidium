@@ -56,6 +56,11 @@ namespace Rubidium
             {
                 return args.Max(x => x.Value);
             }
+            // sum([...]): Returns sum of arguments.
+            else if (name == "sum" && args.Count > 0)
+            {
+                return Fraction.Sum(args.Select(x => x.Value));
+            }
 
             throw new NotImplementedException($"Function call not implemented: function \"{name}\" with {args.Count} arguments");
         }
