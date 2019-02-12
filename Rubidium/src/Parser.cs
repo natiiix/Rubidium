@@ -260,10 +260,19 @@ namespace Rubidium
             {
                 // If the symbol token is followed by a left parenthesis.
                 // Parse and return a function call expression.
-                if (tokens.Count > start + 1 && tokens[start + 1] is SpecialToken next && next.LeftParenthesis)
+                if (tokens.Count > start + 1 && tokens[start + 1] is SpecialToken secondSpecial && secondSpecial.LeftParenthesis)
                 {
                     List<Expression> args = new List<Expression>();
                     int end = start + 1;
+
+                    // Function call without any arguments.
+                    // This is allowed for certain aggregate functions and
+                    // it is also possible to use this to define constants.
+                    if (tokens[start + 2] is SpecialToken thirdSpecial && thirdSpecial.RightParenthesis)
+                    {
+                        length = 3;
+                        return FunctionCallExpression.Build(first.StringValue, args);
+                    }
 
                     // Parse individual function call arguments.
                     while (true)
