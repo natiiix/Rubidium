@@ -36,15 +36,65 @@ namespace Rubidium
 
         private static ConstantExpression CallFunction(string name, List<ConstantExpression> args)
         {
+            // pi(): Returns approximate value of PI converted to Fraction.
+            if (name == "pi" && args.Count == 0)
+            {
+                return (Fraction)Math.PI;
+            }
+            // e(): Returns approximate value of E converted to Fraction.
+            else if (name == "e" && args.Count == 0)
+            {
+                return (Fraction)Math.E;
+            }
             // abs(x): Returns absolute value of argument.
-            if (name == "abs" && args.Count == 1)
+            else if (name == "abs" && args.Count == 1)
             {
                 return args[0].Value.AbsoluteValue;
+            }
+            // round(x): Returns argument value rounded to nearest whole number.
+            else if (name == "round" && args.Count == 1)
+            {
+                return (Fraction)args[0].Value.NearestWholeNumber;
             }
             // sqrt(x): Returns square root of argument.
             else if (name == "sqrt" && args.Count == 1)
             {
                 return args[0].Value.SquareRoot;
+            }
+            // sin(x): Returns sine of argument.
+            else if (name == "sin" && args.Count == 1)
+            {
+                return args[0].Value.CallFunction(Math.Sin);
+            }
+            // cos(x): Returns cosine of argument.
+            else if (name == "cos" && args.Count == 1)
+            {
+                return args[0].Value.CallFunction(Math.Cos);
+            }
+            // tan(x): Returns tangent of argument.
+            else if (name == "tan" && args.Count == 1)
+            {
+                return args[0].Value.CallFunction(Math.Tan);
+            }
+            // log(x): Returns natural logarithm of argument.
+            else if (name == "log" && args.Count == 1)
+            {
+                return args[0].Value.CallFunction(Math.Log);
+            }
+            // log(x, y): Returns logarithm with base Y of argument X.
+            else if (name == "log" && args.Count == 2)
+            {
+                return args[0].Value.CallFunction(x => Math.Log(x, (double)args[1].Value));
+            }
+            // log10(x): Returns logarithm with base 10 of argument.
+            else if (name == "log10" && args.Count == 1)
+            {
+                return args[0].Value.CallFunction(Math.Log10);
+            }
+            // log2(x): Returns logarithm with base 2 of argument.
+            else if (name == "log2" && args.Count == 1)
+            {
+                return args[0].Value.CallFunction(Math.Log2);
             }
             // min(x[, ...]): Returns argument with the lowest value.
             else if (name == "min" && args.Count > 0)

@@ -31,6 +31,60 @@ namespace Rubidium
         public Fraction Square => new Fraction(Numerator * Numerator, Denominator * Denominator);
         public Fraction SquareRoot => (Fraction)Math.Sqrt((double)this);
 
+        /// <summary>
+        /// Value of this Fraction rounded to the nearest whole number.
+        /// </summary>
+        public BigInteger NearestWholeNumber
+        {
+            get
+            {
+                BigInteger wholeNumber = BigInteger.DivRem(Numerator, Denominator, out BigInteger rem);
+
+                if ((rem.Sign < 0 ? -rem : rem) >= Denominator / 2)
+                {
+                    wholeNumber += rem.Sign;
+                }
+
+                return wholeNumber;
+            }
+        }
+
+        /// <summary>
+        /// Value of this Fraction slightly rounded to compensate for various conversion errors.
+        /// This is particularly useful after calls to the mathematical library, most of which
+        /// take a double value and return a double value, which requires two lossy conversions.
+        /// </summary>
+        public Fraction ApproximateValue
+        {
+            get
+            {
+                BigInteger maxDenom = PowerOf10(12);
+                BigInteger step = PowerOf10(3);
+                BigInteger stepHalf = step / 2;
+
+                BigInteger numer = Numerator;
+                BigInteger denom = Denominator;
+
+                while (denom > maxDenom)
+                {
+                    numer = BigInteger.DivRem(numer, step, out BigInteger numerRem);
+                    denom = BigInteger.DivRem(denom, step, out BigInteger denomRem);
+
+                    if ((numerRem.Sign < 0 ? -numerRem : numerRem) >= stepHalf)
+                    {
+                        numer += numerRem.Sign;
+                    }
+
+                    if (denomRem >= stepHalf)
+                    {
+                        denom++;
+                    }
+                }
+
+                return new Fraction(numer, denom);
+            }
+        }
+
         public Fraction(BigInteger numerator, BigInteger denominator)
         {
             if (denominator.IsZero)
@@ -47,6 +101,51 @@ namespace Rubidium
         public Fraction(BigInteger numerator) : this(numerator, 1) { }
 
         public Fraction(int numerator, int denominator = 1) : this((BigInteger)numerator, (BigInteger)denominator) { }
+
+        /// <summary>
+        /// Calls a function with this Fraction converted to double as its argument
+        /// and converts its return value from double to Fraction, which is then returned.
+        /// </summary>
+        /// <param name="callback">Function to call.</param>
+        /// <returns>Returns value returned by callback function converted to Fraction.</returns>
+        public Fraction CallFunction(Func<double, double> callback) => (Fraction)callback((double)this);
+
+        /// <summary>
+        /// Determines if this Fraction is approximately equal to the specified Fraction.
+        /// If one Fraction is equal to zero, then the other is approximately equal to is
+        /// if its absolute value is smaller than one billionth.
+        /// Otherwise, two fractions are approximately equal if their absolute difference
+        /// is smaller than a billionth of the greater of the two fractions' absolute values.
+        /// </summary>
+        /// <param name="f">Fraction to compare this Fraction to.</param>
+        /// <returns>Returns boolean value indicating if this Fraction
+        /// is approximately equal to the specified Fraction.</returns>
+        public bool ApproximatelyEqual(Fraction f)
+        {
+            // Fractions are exactly equal.
+            if (this == f)
+            {
+                return true;
+            }
+
+            // Epsilon factor used to determine if two Fractions are approximately equal.
+            Fraction epsilonFactor = new Fraction(1, 1000000000);
+
+            // If one of the fractions is zero.
+            if (IsZero || f.IsZero)
+            {
+                return (this - f).AbsoluteValue < epsilonFactor;
+            }
+
+            Fraction thisAbs = AbsoluteValue;
+            Fraction fAbs = f.AbsoluteValue;
+
+            // Take the greater absolute value and multiply it by the epsilon factor
+            // to get the epsilon value for this specific pair of fractions.
+            Fraction epsilon = (thisAbs > fAbs ? thisAbs : fAbs) * epsilonFactor;
+
+            return (this - f).AbsoluteValue < epsilon;
+        }
 
         /// <summary>
         /// Normalizes the Fraction to make it easier to work with.

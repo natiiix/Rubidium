@@ -155,6 +155,34 @@ namespace Rubidium.Tests
             });
         }
 
+        [Fact]
+        public static void TestApproximatelyEqual()
+        {
+            // Zero.
+            Assert.True(Fraction.Zero.ApproximatelyEqual(Fraction.Zero));
+            Assert.True(Fraction.Zero.ApproximatelyEqual(new Fraction(1, 2000000000)));
+            Assert.True(Fraction.Zero.ApproximatelyEqual(new Fraction(-1, 2000000000)));
+
+            Assert.False(Fraction.Zero.ApproximatelyEqual(new Fraction(1, 200000000)));
+            Assert.False(Fraction.Zero.ApproximatelyEqual(new Fraction(-1, 200000000)));
+
+            // One.
+            Assert.True(Fraction.One.ApproximatelyEqual(Fraction.One));
+            Assert.True(Fraction.One.ApproximatelyEqual(new Fraction(2000000001, 2000000000)));
+            Assert.True(Fraction.One.ApproximatelyEqual(new Fraction(1999999999, 2000000000)));
+
+            Assert.False(Fraction.One.ApproximatelyEqual(new Fraction(200000001, 200000000)));
+            Assert.False(Fraction.One.ApproximatelyEqual(new Fraction(199999999, 200000000)));
+
+            // Negative one.
+            Assert.True(Fraction.NegativeOne.ApproximatelyEqual(Fraction.NegativeOne));
+            Assert.True(Fraction.NegativeOne.ApproximatelyEqual(new Fraction(-2000000001, 2000000000)));
+            Assert.True(Fraction.NegativeOne.ApproximatelyEqual(new Fraction(-1999999999, 2000000000)));
+
+            Assert.False(Fraction.NegativeOne.ApproximatelyEqual(new Fraction(-200000001, 200000000)));
+            Assert.False(Fraction.NegativeOne.ApproximatelyEqual(new Fraction(-199999999, 200000000)));
+        }
+
         private static void ForEachZero(Action<Fraction> callback)
         {
             for (int i = 1; i < SIZE_LIMIT; i *= 2)
