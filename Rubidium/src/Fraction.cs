@@ -32,6 +32,24 @@ namespace Rubidium
         public Fraction SquareRoot => (Fraction)Math.Sqrt((double)this);
 
         /// <summary>
+        /// Value of this Fraction rounded to the nearest whole number.
+        /// </summary>
+        public BigInteger NearestWholeNumber
+        {
+            get
+            {
+                BigInteger wholeNumber = BigInteger.DivRem(Numerator, Denominator, out BigInteger rem);
+
+                if ((rem.Sign < 0 ? -rem : rem) >= Denominator / 2)
+                {
+                    wholeNumber += rem.Sign;
+                }
+
+                return wholeNumber;
+            }
+        }
+
+        /// <summary>
         /// Value of this Fraction slightly rounded to compensate for various conversion errors.
         /// This is particularly useful after calls to the mathematical library, most of which
         /// take a double value and return a double value, which requires two lossy conversions.
