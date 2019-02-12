@@ -201,6 +201,11 @@ namespace Rubidium
 
         public static Fraction operator -(Fraction f) => new Fraction(-f.Numerator, f.Denominator);
 
+        /// <summary>
+        /// Inversion operation. Swaps numerator and denominator.
+        /// </summary>
+        /// <param name="f">Input Fraction.</param>
+        /// <returns>Returns inverse Fraction to the input Fraction.</returns>
         public static Fraction operator ~(Fraction f) => new Fraction(f.Denominator, f.Numerator);
 
         public static Fraction operator +(Fraction first, Fraction second) =>
@@ -214,6 +219,12 @@ namespace Rubidium
         public static Fraction operator /(Fraction first, Fraction second) =>
             new Fraction(first.Numerator * second.Denominator, first.Denominator * second.Numerator);
 
+        /// <summary>
+        /// Power / exponent operation. Raises base (left-side) Fraction to the exponent (right-side) Fraction.
+        /// </summary>
+        /// <param name="value">Base value.</param>
+        /// <param name="exponent">Exponent value.</param>
+        /// <returns>Returns base value raised to exponent value.</returns>
         public static Fraction operator ^(Fraction value, Fraction exponent)
         {
             // Whole number powers can be calculated fairly easily without conversion to double and back.
