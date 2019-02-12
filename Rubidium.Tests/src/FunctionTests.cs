@@ -9,7 +9,7 @@ namespace Rubidium.Tests
         [Fact]
         public static void TestNonConstantCall()
         {
-            Context c = Program.Evaluate("4x = 2 - 2y; 2 = 8x - 4y; max = max(x, y + 1/2); min = min(x - 3/4, y); sum = sum(x * 2, y / 2); avg = avg(x^2, y^-2)");
+            Context c = Program.Evaluate("4x = 2 - 2y; 2 = 8x - 4y; max = max(x, y + 1/2); min = min(x - 3/4, y); sum = sum(x * 2, y / 2); mean = mean(x^2, y^-2)");
 
             Assert.Equal(6, c.VariableValues.Count);
 
@@ -28,8 +28,8 @@ namespace Rubidium.Tests
             Assert.True(c.VariableValues.ContainsKey("sum"));
             Assert.Equal(new Fraction(7, 8), c.VariableValues["sum"]);
 
-            Assert.True(c.VariableValues.ContainsKey("avg"));
-            Assert.Equal(new Fraction(1033, 128), c.VariableValues["avg"]);
+            Assert.True(c.VariableValues.ContainsKey("mean"));
+            Assert.Equal(new Fraction(1033, 128), c.VariableValues["mean"]);
         }
 
         [Fact]
@@ -121,9 +121,9 @@ namespace Rubidium.Tests
         }
 
         [Fact]
-        public static void TestFunctionAvg()
+        public static void TestFunctionMean()
         {
-            Context c = Program.Evaluate("x = avg(-20, -10, 0, 0.0, 10, 20, 30); y = avg(42.42, -42.42); z = avg(42.42)");
+            Context c = Program.Evaluate("x = mean(-20, -10, 0, 0.0, 10, 20, 30); y = mean(42.42, -42.42); z = mean(42.42)");
 
             Assert.Empty(c.Statements);
             Assert.Empty(c.VariableExpressions);

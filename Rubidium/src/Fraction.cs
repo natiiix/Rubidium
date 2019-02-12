@@ -173,11 +173,11 @@ namespace Rubidium
         }
 
         /// <summary>
-        /// Calculates the average of given values.
+        /// Calculates the mean value of given values.
         /// </summary>
-        /// <param name="values">Values to calculate the average of.</param>
-        /// <returns>Returns the average of given values.</returns>
-        public static Fraction Average(IEnumerable<Fraction> values) => Sum(values) / values.Count();
+        /// <param name="values">Values to calculate the mean value of.</param>
+        /// <returns>Returns the mean value of given values.</returns>
+        public static Fraction Mean(IEnumerable<Fraction> values) => Sum(values) / values.Count();
 
         public int CompareTo(Fraction other) => (this - other).Numerator.Sign;
 
