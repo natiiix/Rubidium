@@ -51,6 +51,11 @@ namespace Rubidium
             {
                 return args[0].Value.SquareRoot;
             }
+            // sin(x): Returns sine of argument.
+            else if (name == "sin" && args.Count == 1)
+            {
+                return args[0].Value.CallFunction(Math.Sin);
+            }
             // min(x[, ...]): Returns argument with the lowest value.
             else if (name == "min" && args.Count > 0)
             {
