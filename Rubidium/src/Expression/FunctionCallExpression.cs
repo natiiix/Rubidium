@@ -71,6 +71,11 @@ namespace Rubidium
             {
                 return args[0].Value.CallFunction(Math.Log);
             }
+            // log(x, y): Returns logarithm with base Y of argument X.
+            else if (name == "log" && args.Count == 2)
+            {
+                return args[0].Value.CallFunction(x => Math.Log(x, (double)args[1].Value));
+            }
             // log10(x): Returns logarithm with base 10 of argument.
             else if (name == "log10" && args.Count == 1)
             {
