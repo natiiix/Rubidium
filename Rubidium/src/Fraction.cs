@@ -57,6 +57,43 @@ namespace Rubidium
         public Fraction CallFunction(Func<double, double> callback) => (Fraction)callback((double)this);
 
         /// <summary>
+        /// Determines if this Fraction is approximately equal to the specified Fraction.
+        /// If one Fraction is equal to zero, then the other is approximately equal to is
+        /// if its absolute value is smaller than one billionth.
+        /// Otherwise, two fractions are approximately equal if their absolute difference
+        /// is smaller than a billionth of the greater of the two fractions' absolute values.
+        /// </summary>
+        /// <param name="f">Fraction to compare this Fraction to.</param>
+        /// <returns>Returns boolean value indicating if this Fraction
+        /// is approximately equal to the specified Fraction.</returns>
+        public bool ApproximatelyEqual(Fraction f)
+        {
+            // Fractions are exactly equal.
+            if (this == f)
+            {
+                return true;
+            }
+
+            // Epsilon factor used to determine if two Fractions are approximately equal.
+            Fraction epsilonFactor = new Fraction(1, 1000000000);
+
+            // If one of the fractions is zero.
+            if (IsZero || f.IsZero)
+            {
+                return (this - f).AbsoluteValue < epsilonFactor;
+            }
+
+            Fraction thisAbs = AbsoluteValue;
+            Fraction fAbs = f.AbsoluteValue;
+
+            // Take the greater absolute value and multiply it by the epsilon factor
+            // to get the epsilon value for this specific pair of fractions.
+            Fraction epsilon = (thisAbs > fAbs ? thisAbs : fAbs) * epsilonFactor;
+
+            return (this - f).AbsoluteValue < epsilon;
+        }
+
+        /// <summary>
         /// Normalizes the Fraction to make it easier to work with.
         /// Denominator must always be positive.
         /// Numerator and denominator must not have a common divisor greater than 1.
