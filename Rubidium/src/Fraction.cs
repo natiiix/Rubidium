@@ -31,6 +31,42 @@ namespace Rubidium
         public Fraction Square => new Fraction(Numerator * Numerator, Denominator * Denominator);
         public Fraction SquareRoot => (Fraction)Math.Sqrt((double)this);
 
+        /// <summary>
+        /// Value of this Fraction slightly rounded to compensate for various conversion errors.
+        /// This is particularly useful after calls to the mathematical library, most of which
+        /// take a double value and return a double value, which requires two lossy conversions.
+        /// </summary>
+        public Fraction ApproximateValue
+        {
+            get
+            {
+                BigInteger maxDenom = PowerOf10(12);
+                BigInteger step = PowerOf10(3);
+                BigInteger stepHalf = step / 2;
+
+                BigInteger numer = Numerator;
+                BigInteger denom = Denominator;
+
+                while (denom > maxDenom)
+                {
+                    numer = BigInteger.DivRem(numer, step, out BigInteger numerRem);
+                    denom = BigInteger.DivRem(denom, step, out BigInteger denomRem);
+
+                    if ((numerRem.Sign < 0 ? -numerRem : numerRem) >= stepHalf)
+                    {
+                        numer += numerRem.Sign;
+                    }
+
+                    if (denomRem >= stepHalf)
+                    {
+                        denom++;
+                    }
+                }
+
+                return new Fraction(numer, denom);
+            }
+        }
+
         public Fraction(BigInteger numerator, BigInteger denominator)
         {
             if (denominator.IsZero)
