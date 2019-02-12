@@ -56,6 +56,21 @@ namespace Rubidium
             {
                 return args.Max(x => x.Value);
             }
+            // sum([...]): Returns sum of arguments.
+            else if (name == "sum")
+            {
+                return Fraction.Sum(args.Select(x => x.Value));
+            }
+            // mean(x[, ...]): Returns mean value of arguments.
+            else if (name == "mean" && args.Count > 0)
+            {
+                return Fraction.Mean(args.Select(x => x.Value));
+            }
+            // median(x[, ...]): Returns median of arguments.
+            else if (name == "median" && args.Count > 0)
+            {
+                return Fraction.Median(args.Select(x => x.Value));
+            }
 
             throw new NotImplementedException($"Function call not implemented: function \"{name}\" with {args.Count} arguments");
         }

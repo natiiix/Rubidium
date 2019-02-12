@@ -27,6 +27,7 @@ namespace Rubidium
         public bool Negative => Numerator.Sign < 0;
         public bool IsWholeNumber => Denominator.IsOne;
         public Fraction AbsoluteValue => Positive ? this : -this;
+        public Fraction Half => new Fraction(Numerator, Denominator * 2);
         public Fraction Square => new Fraction(Numerator * Numerator, Denominator * Denominator);
         public Fraction SquareRoot => (Fraction)Math.Sqrt((double)this);
 
@@ -173,11 +174,29 @@ namespace Rubidium
         }
 
         /// <summary>
-        /// Calculates the average of given values.
+        /// Calculates the mean value of given values.
         /// </summary>
-        /// <param name="values">Values to calculate the average of.</param>
-        /// <returns>Returns the average of given values.</returns>
-        public static Fraction Average(IEnumerable<Fraction> values) => Sum(values) / values.Count();
+        /// <param name="values">Values to calculate the mean value of.</param>
+        /// <returns>Returns the mean value of given values.</returns>
+        public static Fraction Mean(IEnumerable<Fraction> values) => Sum(values) / values.Count();
+
+        /// <summary>
+        /// Finds the median of given values.
+        /// </summary>
+        /// <param name="values">Values to find the median value of.</param>
+        /// <returns>Returns the median of given values.</returns>
+        public static Fraction Median(IEnumerable<Fraction> values)
+        {
+            int count = values.Count();
+            int countHalf = count / 2;
+
+            List<Fraction> ordered = new List<Fraction>(values);
+            ordered.Sort();
+
+            return count % 2 == 1 ?
+                ordered[countHalf] :
+                (ordered[countHalf - 1] + ordered[countHalf]).Half;
+        }
 
         public int CompareTo(Fraction other) => (this - other).Numerator.Sign;
 
