@@ -51,6 +51,11 @@ namespace Rubidium
             {
                 return args[0].Value.AbsoluteValue;
             }
+            // round(x): Returns argument value rounded to nearest whole number.
+            else if (name == "round" && args.Count == 1)
+            {
+                return (Fraction)args[0].Value.NearestWholeNumber;
+            }
             // sqrt(x): Returns square root of argument.
             else if (name == "sqrt" && args.Count == 1)
             {
