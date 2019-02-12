@@ -45,16 +45,26 @@ namespace Rubidium
 
         public Fraction(BigInteger numerator) : this(numerator, 1) { }
 
+        public Fraction(int numerator, int denominator = 1) : this((BigInteger)numerator, (BigInteger)denominator) { }
+
+        /// <summary>
+        /// Normalizes the Fraction to make it easier to work with.
+        /// Denominator must always be positive.
+        /// Numerator and denominator must not have a common divisor greater than 1.
+        /// </summary>
         private void Normalize()
         {
+            // If denominator is negative, negate both parts of Fraction.
             if (Denominator.Sign < 0)
             {
-                Denominator = -Denominator;
                 Numerator = -Numerator;
+                Denominator = -Denominator;
             }
 
+            // Find greatest common divisor of numerator and denominator.
             BigInteger gcd = BigInteger.GreatestCommonDivisor(Numerator, Denominator);
 
+            // Divide both parts of Fraction by their greatest common divisor.
             if (!gcd.IsOne)
             {
                 Numerator /= gcd;
@@ -62,8 +72,13 @@ namespace Rubidium
             }
         }
 
-        public Fraction(int numerator, int denominator = 1) : this((BigInteger)numerator, (BigInteger)denominator) { }
-
+        /// <summary>
+        /// Parses a Fraction from a double-precision floating-point value.
+        /// This function is very slow because it first converts the double to string
+        /// in scientific notation and then parses the Fraction from the string.
+        /// </summary>
+        /// <param name="value">Double value to parse into a Fraction.</param>
+        /// <returns>Returns parsed Fraction.</returns>
         public static Fraction FromDouble(double value)
         {
             const int PRECISION = 15;
@@ -89,6 +104,13 @@ namespace Rubidium
             return new Fraction(numerator, denominator);
         }
 
+        /// <summary>
+        /// Attempts to parse a Fraction from a string representation of a numeric value.
+        /// Only standard ### and ###.## notation is allowed (scientific notation is NOT supported).
+        /// </summary>
+        /// <param name="str">Input string to parse the Fraction from.</param>
+        /// <param name="value">Output parsed Fraction.</param>
+        /// <returns>Returns boolean value indicating if a Fraction has been successfully parsed.</returns>
         public static bool TryParse(string str, out Fraction value)
         {
             BigInteger numerator = 0;
@@ -119,13 +141,25 @@ namespace Rubidium
                 }
             }
 
-            value = new Fraction(numerator, BigInteger.Pow(10, decimalDigits));
+            value = new Fraction(numerator, PowerOf10(decimalDigits));
             return true;
         }
 
+        /// <summary>
+        /// Parses a Fraction from a string representation of a numeric value.
+        /// Only standard ### and ###.## notation is allowed (scientific notation is NOT supported).
+        /// Invalid input will result in an exception.
+        /// </summary>
+        /// <param name="str">Input string to parse the Fraction from.</param>
+        /// <returns>Returns the parsed Fraction.</returns>
         public static Fraction Parse(string str) =>
             TryParse(str, out Fraction value) ? value : throw new ArgumentException($"Not a valid number: {str}");
 
+        /// <summary>
+        /// Calculates the sum of given values.
+        /// </summary>
+        /// <param name="values">Values to calculate the sum of.</param>
+        /// <returns>Returns the sum of given values.</returns>
         public static Fraction Sum(IEnumerable<Fraction> values)
         {
             Fraction sum = 0;
@@ -138,6 +172,11 @@ namespace Rubidium
             return sum;
         }
 
+        /// <summary>
+        /// Calculates the average of given values.
+        /// </summary>
+        /// <param name="values">Values to calculate the average of.</param>
+        /// <returns>Returns the average of given values.</returns>
         public static Fraction Average(IEnumerable<Fraction> values) => Sum(values) / values.Count();
 
         public int CompareTo(Fraction other) => (this - other).Numerator.Sign;
@@ -153,6 +192,7 @@ namespace Rubidium
         public static implicit operator Fraction(int i) => new Fraction(i);
 
         public static explicit operator Fraction(double d) => FromDouble(d);
+
         public static implicit operator Fraction(ConstantExpression c) => c.Value;
 
         public static explicit operator double(Fraction f) => (double)f.Numerator / (double)f.Denominator;
@@ -176,23 +216,29 @@ namespace Rubidium
 
         public static Fraction operator ^(Fraction value, Fraction exponent)
         {
+            // Whole number powers can be calculated fairly easily without conversion to double and back.
             if (exponent.IsWholeNumber && exponent.Numerator >= int.MinValue && exponent.Numerator <= int.MaxValue)
             {
                 int exp = (int)exponent.Numerator;
 
+                // Positive exponent.
                 if (exp > 0)
                 {
                     return new Fraction(BigInteger.Pow(value.Numerator, exp), BigInteger.Pow(value.Denominator, exp));
                 }
+                // Negative exponent.
                 else if (exp < 0)
                 {
                     return new Fraction(BigInteger.Pow(value.Denominator, -exp), BigInteger.Pow(value.Numerator, -exp));
                 }
+                // Zero exponent.
                 else
                 {
                     return Fraction.One;
                 }
             }
+            // Real number powers are difficult to calculate, therefore the Math.Pow() function is used.
+            // This operation is typically very slow.
             else
             {
                 // throw new NotImplementedException($"Exponent must be an integer within the range {int.MinValue} - {int.MaxValue}");
@@ -214,6 +260,12 @@ namespace Rubidium
 
         public static bool operator >=(Fraction first, Fraction second) => first.CompareTo(second) >= 0;
 
-        private static BigInteger PowerOf10(int power) => BigInteger.Pow(10, power);
+        /// <summary>
+        /// Generates a specified power of 10 as BigInteger.
+        /// </summary>
+        /// <param name="power">Requested power of 10.</param>
+        /// <returns>Returns BigInteger equal to specified power of 10.</returns>
+        private static BigInteger PowerOf10(int power) =>
+            power == 0 ? BigInteger.One : BigInteger.Pow(10, power);
     }
 }
