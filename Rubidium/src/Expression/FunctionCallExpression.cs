@@ -80,7 +80,7 @@ namespace Rubidium
 
                 for (BigInteger i = 2; i < args[0].Value.Numerator; i++)
                 {
-                    result += i;
+                    result *= i;
                 }
 
                 return (Fraction)result;
