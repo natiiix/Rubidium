@@ -16,6 +16,7 @@ namespace Rubidium
         public bool Multiplication => StringValue == "*";
         public bool Division => StringValue == "/";
         public bool Power => StringValue == "^";
+        public bool Derivative => StringValue == "'";
 
         /// <summary>
         /// SpecialToken constructor, which just calls the base Token constructor.

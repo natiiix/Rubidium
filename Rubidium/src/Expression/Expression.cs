@@ -26,6 +26,12 @@ namespace Rubidium
         public abstract Expression SubstituteVariables(Dictionary<string, Fraction> variableValues, Dictionary<string, Expression> variableExpressions);
 
         /// <summary>
+        /// Attempts to find a derivative of the expression.
+        /// </summary>
+        /// <returns>Returns the derivative.</returns>
+        public abstract Expression FindDerivative();
+
+        /// <summary>
         /// Unary subtraction (negation) operation of an expression.
         /// </summary>
         /// <param name="expr">Expression to be negated.</param>

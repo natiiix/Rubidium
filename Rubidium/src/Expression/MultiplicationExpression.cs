@@ -84,6 +84,9 @@ namespace Rubidium
         public override Expression SubstituteVariables(Dictionary<string, Fraction> variableValues, Dictionary<string, Expression> variableExpressions) =>
             Build(Coefficient, VariableParts.Select(x => x.SubstituteVariables(variableValues, variableExpressions)));
 
+        public override Expression FindDerivative() =>
+            AdditionExpression.Build(VariableParts.Select(x => x.FindDerivative() * MultiplicationExpression.Build(VariableParts.Where(y => y != x)))) * Coefficient;
+
         public override string ToString() =>
             IsVariableWithCoefficient ?
             $"{Coefficient}{VariableParts[0]}" :

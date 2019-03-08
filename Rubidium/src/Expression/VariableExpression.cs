@@ -31,6 +31,8 @@ namespace Rubidium
             }
         }
 
+        public override Expression FindDerivative() => Fraction.One;
+
         public override string ToString() => Name;
     }
 }

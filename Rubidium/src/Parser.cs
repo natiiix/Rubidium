@@ -217,7 +217,7 @@ namespace Rubidium
         private static Expression ParseExponent(List<Token> tokens, int start, out int length)
         {
             // Parse base value sub-expression.
-            Expression baseValue = ParseExpression(tokens, start, out int baseLen);
+            Expression baseValue = ParseDerivative(tokens, start, out int baseLen);
 
             // If the base value is followed by a power operator token,
             // parse the exponent expression and return an exponent expression.
@@ -233,6 +233,30 @@ namespace Rubidium
                 length = baseLen;
                 return baseValue;
             }
+        }
+
+        /// <summary>
+        /// Parses a derivative expression.
+        /// If the parsed expression is a derivative expression,
+        /// derivative of the inner expression will be returned.
+        /// Otherwise, the inner expression itself will be returned.
+        /// </summary>
+        /// <param name="tokens">Input list of tokens.</param>
+        /// <param name="start">Index of first token of the expression.</param>
+        /// <param name="length">Output variable for expression length (number of tokens used).</param>
+        /// <returns>Returns the parsed expression.</returns>
+        private static Expression ParseDerivative(List<Token> tokens, int start, out int length)
+        {
+            Expression expr = ParseExpression(tokens, start, out int exprLen);
+            length = exprLen;
+
+            while (tokens.Count > start + length && tokens[start + length] is SpecialToken special && special.Derivative)
+            {
+                expr = expr.FindDerivative();
+                length++;
+            }
+
+            return expr;
         }
 
         /// <summary>
