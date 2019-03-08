@@ -35,6 +35,12 @@ namespace Rubidium
             }
         }
 
+        /// <summary>
+        /// Single-argument version of the regular Build() function.
+        /// </summary>
+        public static Expression Build(string funcName, Expression arg) =>
+            Build(funcName, new List<Expression>() { arg });
+
         private static ConstantExpression CallFunction(string name, List<ConstantExpression> args)
         {
             // pi(): Returns approximate value of PI converted to Fraction.
