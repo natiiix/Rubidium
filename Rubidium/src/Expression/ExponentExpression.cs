@@ -20,14 +20,23 @@ namespace Rubidium
 
         public static Expression Build(Expression baseValue, Expression exponent)
         {
-            if (baseValue is ConstantExpression baseConst && exponent is ConstantExpression exponentConst)
+            if (exponent is ConstantExpression exponentConst)
             {
-                return baseConst.Value ^ exponentConst;
+                if (exponentConst.Value.IsZero)
+                {
+                    return ConstantExpression.One;
+                }
+                else if (exponentConst.Value == Fraction.One)
+                {
+                    return baseValue;
+                }
+                else if (baseValue is ConstantExpression baseConst)
+                {
+                    return baseConst.Value ^ exponentConst;
+                }
             }
-            else
-            {
-                return new ExponentExpression(baseValue, exponent);
-            }
+
+            return new ExponentExpression(baseValue, exponent);
         }
 
         public override Expression SubstituteVariables(Dictionary<string, Fraction> variableValues, Dictionary<string, Expression> variableExpressions) =>
