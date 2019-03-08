@@ -165,24 +165,20 @@ namespace Rubidium
 
         public override Expression FindDerivative()
         {
-            if (Arguments.Count == 1 && (Arguments[0] is ConstantExpression || Arguments[0] is VariableExpression))
+            if (Arguments.Count == 1)
             {
-                switch (FunctionName)
+                Expression topLevelDerivative =
+                    FunctionName == "sin" ? Build("cos", Arguments) :
+                    FunctionName == "cos" ? -Build("sin", Arguments) :
+                    FunctionName == "ln" ? FractionExpression.Build(ConstantExpression.One, Arguments[0]) :
+                    FunctionName == "sqrt" ? FractionExpression.Build(ConstantExpression.One, (Fraction)2 * this) :
+                    null;
+
+                if (topLevelDerivative != null)
                 {
-                    case "sin":
-                        return Build("cos", Arguments);
-
-                    case "cos":
-                        return -Build("sin", Arguments);
-
-                    case "ln":
-                        return FractionExpression.Build(ConstantExpression.One, Arguments[0]);
-
-                    case "sqrt":
-                        return FractionExpression.Build(ConstantExpression.One, (Fraction)2 * this);
-
-                    default:
-                        break;
+                    return Arguments[0] is VariableExpression ?
+                        topLevelDerivative :
+                        topLevelDerivative * Arguments[0].FindDerivative();
                 }
             }
 
