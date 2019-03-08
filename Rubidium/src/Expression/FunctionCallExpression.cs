@@ -76,15 +76,15 @@ namespace Rubidium
             {
                 return args[0].Value.CallFunction(Math.Tan);
             }
-            // log(x): Returns natural logarithm of argument.
-            else if (name == "log" && args.Count == 1)
+            // ln(x): Returns natural logarithm of argument.
+            else if (name == "ln" && args.Count == 1)
             {
                 return args[0].Value.CallFunction(Math.Log);
             }
-            // log(x, y): Returns logarithm with base Y of argument X.
-            else if (name == "log" && args.Count == 2)
+            // log(x): Returns base 10 logarithm of argument.
+            else if (name == "log" && args.Count == 1)
             {
-                return args[0].Value.CallFunction(x => Math.Log(x, (double)args[1].Value));
+                return args[0].Value.CallFunction(Math.Log10);
             }
             // log10(x): Returns logarithm with base 10 of argument.
             else if (name == "log10" && args.Count == 1)
@@ -95,6 +95,11 @@ namespace Rubidium
             else if (name == "log2" && args.Count == 1)
             {
                 return args[0].Value.CallFunction(Math.Log2);
+            }
+            // log(x, y): Returns logarithm with base Y of argument X.
+            else if (name == "log" && args.Count == 2)
+            {
+                return args[0].Value.CallFunction(x => Math.Log(x, (double)args[1].Value));
             }
             // min(x[, ...]): Returns argument with the lowest value.
             else if (name == "min" && args.Count > 0)
