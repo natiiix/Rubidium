@@ -20,9 +20,15 @@ namespace Rubidium
 
         public static Expression Build(Expression numerator, Expression denominator)
         {
-            if (denominator is ConstantExpression denomConst)
+            if (numerator is ConstantExpression numerConst && numerConst.Value.IsZero)
             {
-                return denomConst == Fraction.One ? numerator : numerator * ~denomConst.Value;
+                return ConstantExpression.Zero;
+            }
+            else if (denominator is ConstantExpression denomConst)
+            {
+                return denomConst == Fraction.One ? numerator :
+                    denomConst == Fraction.NegativeOne ? -numerator :
+                    numerator * ~denomConst.Value;
             }
             else if (numerator is FractionExpression numerFract)
             {
