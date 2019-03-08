@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Numerics;
 
 namespace Rubidium
 {
@@ -65,6 +66,24 @@ namespace Rubidium
             else if (name == "sqrt" && args.Count == 1)
             {
                 return args[0].Value.SquareRoot;
+            }
+            // fact(x): Returns factorial of argument.
+            // Argument must be whole positive number or zero.
+            else if (name == "fact" && args.Count == 1)
+            {
+                if (args[0].Value.IsWholeNumber && !args[0].Value.Negative)
+                {
+                    throw new ArgumentException("fact(x) argument must be whole positive number or zero");
+                }
+
+                BigInteger result = 1;
+
+                for (BigInteger i = 2; i < args[0].Value.Numerator; i++)
+                {
+                    result += i;
+                }
+
+                return (Fraction)result;
             }
             // sin(x): Returns sine of argument.
             else if (name == "sin" && args.Count == 1)
