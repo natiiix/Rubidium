@@ -41,6 +41,9 @@ namespace Rubidium
         public override Expression SubstituteVariables(Dictionary<string, Fraction> variableValues, Dictionary<string, Expression> variableExpressions) =>
             Build(Numerator.SubstituteVariables(variableValues, variableExpressions), Denominator.SubstituteVariables(variableValues, variableExpressions));
 
+        public override Expression FindDerivative() =>
+            FractionExpression.Build((Numerator.FindDerivative() * Denominator) - (Numerator * Denominator.FindDerivative()), ExponentExpression.Build(Denominator, (Fraction)2));
+
         public override string ToString() => $"({Numerator} / {Denominator})";
     }
 }

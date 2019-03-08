@@ -18,6 +18,8 @@ namespace Rubidium
 
         public override Expression SubstituteVariables(Dictionary<string, Fraction> variableValues, Dictionary<string, Expression> variableExpressions) => this;
 
+        public override Expression FindDerivative() => Fraction.Zero;
+
         public override string ToString() => Value.ToString();
     }
 }

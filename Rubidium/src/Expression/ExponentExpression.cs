@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 
 namespace Rubidium
@@ -31,6 +32,11 @@ namespace Rubidium
 
         public override Expression SubstituteVariables(Dictionary<string, Fraction> variableValues, Dictionary<string, Expression> variableExpressions) =>
             Build(BaseValue.SubstituteVariables(variableValues, variableExpressions), Exponent.SubstituteVariables(variableValues, variableExpressions));
+
+        public override Expression FindDerivative() =>
+            BaseValue.ContainsVariables && !Exponent.ContainsVariables ? Exponent * Build(BaseValue, Exponent - Fraction.One) :
+            !BaseValue.ContainsVariables && Exponent.ContainsVariables ? this * (BaseValue as ConstantExpression).Value.CallFunction(Math.Log) :
+            throw new NotImplementedException($"Unabled to raise {BaseValue} to the power of {Exponent}");
 
         public override string ToString() => $"({BaseValue}^{Exponent})";
     }

@@ -163,6 +163,11 @@ namespace Rubidium
         public override Expression SubstituteVariables(Dictionary<string, Fraction> variableValues, Dictionary<string, Expression> variableExpressions) =>
             Build(FunctionName, Arguments.Select(x => x.SubstituteVariables(variableValues, variableExpressions)).ToList());
 
+        public override Expression FindDerivative()
+        {
+            throw new NotImplementedException();
+        }
+
         public override string ToString() => $"{FunctionName}({string.Join(", ", Arguments)})";
     }
 }
