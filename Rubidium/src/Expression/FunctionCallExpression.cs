@@ -165,7 +165,28 @@ namespace Rubidium
 
         public override Expression FindDerivative()
         {
-            throw new NotImplementedException();
+            if (Arguments.Count == 1 && (Arguments[0] is ConstantExpression || Arguments[0] is VariableExpression))
+            {
+                switch (FunctionName)
+                {
+                    case "sin":
+                        return Build("cos", Arguments);
+
+                    case "cos":
+                        return -Build("sin", Arguments);
+
+                    case "ln":
+                        return FractionExpression.Build(ConstantExpression.One, Arguments[0]);
+
+                    case "sqrt":
+                        return FractionExpression.Build(ConstantExpression.One, (Fraction)2 * this);
+
+                    default:
+                        break;
+                }
+            }
+
+            throw new NotImplementedException($"Function \"{FunctionName}\" with {Arguments.Count} arguments has no defined derivation");
         }
 
         public override string ToString() => $"{FunctionName}({string.Join(", ", Arguments)})";
